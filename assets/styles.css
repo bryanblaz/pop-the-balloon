@@ -17,7 +17,7 @@ html, body { height: 100%; margin: 0; padding: 0; box-sizing: border-box; }
 body.legal { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Courier New", monospace;
   background: var(--bg); color: var(--fg); display: flex; flex-direction: column; align-items: center; justify-content: space-between; min-height: 100vh; }
 .legal__header { text-align: center; padding-top: 24px; }
-.brand-img { height: clamp(100px, 45vw, 100px); width: auto; display: inline-block; }
+.brand-img { height: clamp(90px, 45vw, 90px); width: auto; display: inline-block; }
 .brand__sub { display: block; font-weight: 800; font-size: clamp(14px, 2vw, 24px); color: var(--accent); margin-top: 6px; }
 .theme-toggle { margin-top: 10px; }
 .theme-toggle__btn { display: inline-flex; align-items: center; gap: 8px; padding: 8px 12px; border-radius: 999px; border: 1px solid var(--card-border);
