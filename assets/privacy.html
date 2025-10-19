@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en" data-theme="auto">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="styles.css" />
+  <meta name="color-scheme" content="dark light">
+</head>
+<body class="legal">
+  <header class="legal__header">
+    <div class="theme-toggle">
+      <button id="themeBtn" class="theme-toggle__btn" type="button"><span class="theme-toggle__icon" aria-hidden="true">🌙</span><span class="theme-toggle__label">Dark</span></button>
+    </div>
+  </header>
+  <main class="legal__main">
+    <div class="split">
+      <div class="split__left">
+        <img class="balloon" src="balloon-round.png" alt="Red round balloon" />
+        <nav class="vlinks" aria-label="Legal links">
+		<a href="home.html">Home</a>
+          <a href="index.html">Terms of Service</a>
+          <a href="privacy.html" aria-current="page">Privacy Policy</a>
+          <a href="safety.html">User Safety &amp; Reporting</a>
+        </nav>
+      </div>
+      <div class="split__right">
+        <section class="pdf">
+          <iframe class="pdf__frame" title="Privacy Policy (PDF)" src="https://drive.google.com/file/d/YOUR_PRIVACY_FILE_ID/preview?rm=minimal" allowfullscreen loading="eager" referrerpolicy="no-referrer-when-downgrade"></iframe>
+        </section>
+      </div>
+    </div>
+  </main>
+  <footer class="legal__footer"><p>© <span id="y"></span> Pop The Balloon</p></footer>
+  
+  <script>
+    (document.getElementById('y')||{}).textContent = new Date().getFullYear();
+    const KEY='ptb_theme', root=document.documentElement;
+    const btn=document.getElementById('themeBtn');
+    const label=()=>btn && btn.querySelector('.theme-toggle__label');
+    const icon =()=>btn && btn.querySelector('.theme-toggle__icon');
+    const prefersDark = () => matchMedia('(prefers-color-scheme: dark)').matches;
+    function applyTheme(mode, withTransition=false){
+      if(withTransition){ root.classList.add('theme-transition'); requestAnimationFrame(()=>{
+        root.setAttribute('data-theme', mode); setTimeout(()=>root.classList.remove('theme-transition'), 650);
+      }); } else { root.setAttribute('data-theme', mode); }
+      const eff = mode==='auto' ? (prefersDark()?'dark':'light') : mode;
+      if(label()) label().textContent = eff==='dark'?'Dark':'Light';
+      if(icon())  icon().textContent  = eff==='dark'?'🌙':'☀️';
+      const logoDark = document.getElementById('logo-dark');
+      const logoLight = document.getElementById('logo-light');
+      const useDark = eff === 'dark';
+      if(logoDark && logoLight){ logoDark.style.display = useDark ? 'inline-block' : 'none'; logoLight.style.display = useDark ? 'none' : 'inline-block'; }
+    }
+    function getSaved(){ return localStorage.getItem(KEY) || 'auto'; }
+    function cycle(){ const curr=root.getAttribute('data-theme')||'auto'; const next= curr==='auto'?'dark':curr==='dark'?'light':'auto'; localStorage.setItem(KEY,next); applyTheme(next, true); }
+    applyTheme(getSaved());
+    if(btn) btn.addEventListener('click', cycle);
+    matchMedia('(prefers-color-scheme: dark)').addEventListener('change', ()=>{ if((localStorage.getItem(KEY)||'auto')==='auto') applyTheme('auto', true); });
+  </script>
+
+</body>
+</html>
