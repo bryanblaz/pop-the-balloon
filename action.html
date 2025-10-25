@@ -1,0 +1,261 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <link rel="shortcut icon" type="image/x-icon" href="https://i.ibb.co/5X6z2dDT/favicon2.png">
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Password Reset • Pop The Balloon</title>
+  <meta name="color-scheme" content="dark light">
+  <style>
+    /* ===== THEME VARIABLES ===== */
+    :root {
+      /* light defaults */
+      --bg: #ffffff;
+      --fg: #0b0b0c;
+      --muted: #0b0b0cbb;
+      --card-bg: #ffffff;
+      --card-border: #00000022;
+      --input-bg: #ffffff;
+      --input-border: #0000003a;
+      --input-fg: #0b0b0c;
+      --shadow: 0 10px 30px #00000014;
+    }
+    /* Auto = follow system. We switch vars only when system prefers dark */
+    @media (prefers-color-scheme: dark) {
+      :root[data-theme="auto"] {
+        --bg: #0c0c10;
+        --fg: #eaeaec;
+        --muted: #eaeaecbb;
+        --card-bg: #121218;
+        --card-border: #ffffff22;
+        --input-bg: #161621;
+        --input-border: #ffffff33;
+        --input-fg: #eaeaec;
+        --shadow: 0 10px 30px #00000055;
+      }
+    }
+    /* Explicit dark */
+    :root[data-theme="dark"] {
+      --bg: #0c0c10;
+      --fg: #eaeaec;
+      --muted: #eaeaecbb;
+      --card-bg: #121218;
+      --card-border: #ffffff22;
+      --input-bg: #161621;
+      --input-border: #ffffff33;
+      --input-fg: #eaeaec;
+      --shadow: 0 10px 30px #00000055;
+    }
+    /* Explicit light */
+    :root[data-theme="light"] {
+      --bg: #ffffff;
+      --fg: #0b0b0c;
+      --muted: #0b0b0cbb;
+      --card-bg: #ffffff;
+      --card-border: #00000022;
+      --input-bg: #ffffff;
+      --input-border: #0000003a;
+      --input-fg: #0b0b0c;
+      --shadow: 0 10px 30px #00000014;
+    }
+
+    /* ===== BASE LAYOUT ===== */
+    :root { font-family: system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial, sans-serif; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--fg);
+      min-height: 100dvh;
+      display: flex; flex-direction: column;
+      justify-content: center; align-items: center; gap: 1rem;
+      transition: background .25s ease, color .25s ease;
+    }
+    .card {
+      width: min(520px, 92vw);
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 22px 20px;
+      box-shadow: var(--shadow);
+    }
+    h1 { margin: 0 0 8px; font-size: 1.25rem; }
+    p  { margin: 6px 0 14px; line-height: 1.45; }
+    .muted { opacity: 1; color: var(--muted); font-size: .95rem; }
+
+    label { display:block; margin:.5rem 0 .25rem; }
+    input[type="password"] {
+      width:100%; padding:.7rem .8rem;
+      background: var(--input-bg);
+      color: var(--input-fg);
+      border:1px solid var(--input-border);
+      border-radius:10px; font-size:1rem;
+      outline: none;
+    }
+    input[type="password"]::placeholder { color: var(--muted); }
+    button { margin-top:14px; width:100%; padding:.8rem; border:0; border-radius:999px; font-weight:600; cursor:pointer; }
+    button.primary { background:#e11d48; color:white; }
+    button[disabled] { opacity:.6; cursor:not-allowed; }
+    .error { color:#ff4b4b; margin-top:.5rem; white-space:pre-wrap; }
+    .success { color:#22c55e; }
+    .spinner { display:inline-block; width:1em; height:1em; border:.15em solid currentColor; border-right-color:transparent; border-radius:50%; animation:spin .8s linear infinite; vertical-align:-2px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .hidden { display:none !important; }
+    .small { font-size:.9rem; }
+
+    /* Heart */
+    .heart { width: 120px; height: auto; animation: float 4s ease-in-out infinite; }
+    @keyframes float { 0%,100% { transform: translateY(0) } 50% { transform: translateY(-10px) } }
+
+    /* Theme toggle button */
+    .theme-toggle { position: fixed; top: 14px; right: 14px; }
+    .theme-toggle__btn { padding:.5rem .75rem; border-radius:999px; border:1px solid var(--card-border); background:transparent; color: var(--fg); }
+    .theme-toggle__icon { margin-right:.4rem; }
+
+    /* Optional smooth theme change */
+    .theme-transition * { transition: background-color .35s ease, color .35s ease, border-color .35s ease; }
+  </style>
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+</head>
+
+<body>
+  <!-- Theme toggle -->
+  <div class="theme-toggle">
+    <button id="themeBtn" class="theme-toggle__btn" type="button">
+      <span class="theme-toggle__icon" aria-hidden="true">🌙</span>
+      <span class="theme-toggle__label">Dark</span>
+    </button>
+  </div>
+
+  <!-- ❤️ Heart Balloon -->
+  <img src="balloon-heart.png" alt="Heart Balloon" class="heart" />
+
+  <main class="card" id="card">
+    <h1>Reset your password</h1>
+    <p class="muted" id="emailLine">Verifying your link… <span class="spinner"></span></p>
+
+    <form id="form" class="hidden" novalidate>
+      <label for="password">New password</label>
+      <input id="password" name="password" type="password" autocomplete="new-password" minlength="6" required />
+
+      <label for="confirm">Confirm password</label>
+      <input id="confirm" name="confirm" type="password" autocomplete="new-password" minlength="6" required />
+
+      <div id="msg" class="error hidden"></div>
+      <button id="submit" class="primary" type="submit">Set new password</button>
+      <p id="footnote" class="small muted">Passwords must be at least 6 characters. Keep it unique.</p>
+    </form>
+
+    <div id="done" class="hidden">
+      <p class="success">Your password has been updated.</p>
+      <p id="redirectMsg" class="muted"></p>
+      <button id="go" class="primary hidden">Continue</button>
+    </div>
+  </main>
+
+  <script>
+    /* Firebase */
+    const firebaseConfig = {
+      apiKey: "AIzaSyCIr5PlB9YZzvaP58bizLgiMWLZmLQpoeI",
+      authDomain: "poptheballoonapp-44787.firebaseapp.com",
+      projectId: "poptheballoonapp-44787",
+      storageBucket: "poptheballoonapp-44787.appspot.com",
+      messagingSenderId: "112229962313",
+      appId: "1:112229962313:web:c28b40d62fb13673018d8d"
+    };
+    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+
+    /* Action params */
+    const params = new URLSearchParams(location.search);
+    const mode = params.get('mode');
+    const oobCode = params.get('oobCode');
+    const continueUrl = params.get('continueUrl');
+    const lang = params.get('lang') || 'en';
+    auth.languageCode = lang;
+
+    const qs = (s) => document.querySelector(s);
+    const emailLine = qs('#emailLine');
+    const form = qs('#form');
+    const msg = qs('#msg');
+    const done = qs('#done');
+    const goBtn = qs('#go');
+    const submitBtn = qs('#submit');
+
+    function show(el){ el.classList.remove('hidden'); }
+    function hide(el){ el.classList.add('hidden'); }
+    function fail(text){ msg.textContent=text; show(msg); }
+    function disable(b){ submitBtn.disabled=b; }
+
+    if (mode !== 'resetPassword' || !oobCode) {
+      emailLine.textContent = 'This reset link is missing information or has the wrong mode.';
+    } else {
+      auth.verifyPasswordResetCode(oobCode)
+        .then(email => { emailLine.textContent = `Resetting password for ${email}`; show(form); })
+        .catch(error => {
+          const map = {
+            'auth/expired-action-code': 'This reset link has expired. Request a new one.',
+            'auth/invalid-action-code': 'This reset link is invalid or already used.'
+          };
+          emailLine.innerHTML = `<span class="error">${map[error.code] || error.message}</span>`;
+        });
+    }
+
+    form.addEventListener('submit', async e => {
+      e.preventDefault();
+      hide(msg); disable(true);
+      try {
+        const pw = qs('#password').value.trim();
+        const cf = qs('#confirm').value.trim();
+        if (pw.length < 6) throw new Error('Password must be at least 6 characters.');
+        if (pw !== cf) throw new Error('Passwords do not match.');
+        await auth.confirmPasswordReset(oobCode, pw);
+        hide(form); show(done);
+        qs('#redirectMsg').textContent = continueUrl ? 'All set. Continue back to the app.' : 'All set. You can now sign in with your new password.';
+        if (continueUrl){ show(goBtn); goBtn.onclick=()=>location.href=continueUrl; }
+      } catch(err){ fail(err.message); }
+      finally{ disable(false); }
+    });
+  </script>
+
+  <script>
+    /* THEME TOGGLE (Auto → Dark → Light) */
+    const KEY='ptb_theme', root=document.documentElement;
+    const btn=document.getElementById('themeBtn');
+    const label=()=>btn && btn.querySelector('.theme-toggle__label');
+    const icon =()=>btn && btn.querySelector('.theme-toggle__icon');
+    const prefersDark = () => matchMedia('(prefers-color-scheme: dark)').matches;
+
+    function applyTheme(mode, withTransition=false){
+      if(withTransition){
+        root.classList.add('theme-transition');
+        requestAnimationFrame(()=>{
+          root.setAttribute('data-theme', mode);
+          setTimeout(()=>root.classList.remove('theme-transition'), 650);
+        });
+      } else {
+        root.setAttribute('data-theme', mode);
+      }
+      const eff = mode==='auto' ? (prefersDark()?'dark':'light') : mode;
+      if(label()) label().textContent = eff==='dark' ? 'Dark' : 'Light';
+      if(icon())  icon().textContent  = eff==='dark' ? '🌙' : '☀️';
+    }
+    function getSaved(){ return localStorage.getItem(KEY) || 'auto'; }
+    function cycle(){
+      const curr=root.getAttribute('data-theme')||'auto';
+      const next= curr==='auto' ? 'dark' : (curr==='dark' ? 'light' : 'auto');
+      localStorage.setItem(KEY, next);
+      applyTheme(next, true);
+    }
+    // initial paint
+    applyTheme(getSaved());
+    if(btn) btn.addEventListener('click', cycle);
+    matchMedia('(prefers-color-scheme: dark)').addEventListener('change', ()=>{
+      if((localStorage.getItem(KEY)||'auto')==='auto') applyTheme('auto', true);
+    });
+  </script>
+</body>
+</html>
