@@ -1,5 +1,21 @@
 <!doctype html>
 <html lang="en" data-theme="auto">
+
+  <style>
+    .heart {
+      width: 300px;
+      height: 300;
+      animation: float 4s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+
+  </style>
+
 <head>
   <meta charset="utf-8" />
 	<link rel="shortcut icon" type="x-icon" href="https://i.ibb.co/5X6z2dDT/favicon2.png">
@@ -13,11 +29,13 @@
     <div class="theme-toggle">
       <button id="themeBtn" class="theme-toggle__btn" type="button"><span class="theme-toggle__icon" aria-hidden="true">🌙</span><span class="theme-toggle__label">Dark</span></button>
     </div>
+	
   </header>
   <main class="legal__main">
     <div class="split">
       <div class="split__left">
-        <img class="balloon" src="balloon-round.png" alt="Red round balloon" />
+	    <img src="balloon-round.png" alt="Heart Balloon" class="heart" />
+
         <nav class="vlinks" aria-label="Legal links">
 		<a href="home.html">Home</a>
           <a href="index.html">Terms of Service</a>
