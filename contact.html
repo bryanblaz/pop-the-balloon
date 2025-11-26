@@ -63,6 +63,18 @@
 </head>
 
 <body class="legal">
+
+	  <!-- Consent Manager snippet -->
+  <div id="ptb-consent-container"></div>
+  <script>
+    fetch('/consent/consent.html')
+      .then(r => r.text())
+      .then(html => {
+        document.getElementById('ptb-consent-container').innerHTML = html;
+      });
+  </script>
+  <!-- End Consent Manager snippet -->
+	
   <header class="legal__header">
     <nav class="legal__nav" aria-label="Site links">
       <a href="home.html">Home</a>
