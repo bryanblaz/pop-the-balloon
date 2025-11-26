@@ -1,0 +1,120 @@
+/* Backdrop */
+#ptb-consent-backdrop {
+  position: fixed;
+  inset: 0;
+  background: #0008;
+  backdrop-filter: saturate(120%) blur(2px);
+  display: none;
+  z-index: 99998;
+  opacity: 0;
+  transition: opacity 0.25s ease-out;
+}
+
+#ptb-consent-backdrop.ptb-open {
+  opacity: 1;
+}
+
+/* Banner */
+#ptb-consent {
+  position: fixed;
+  left: 50%;
+  bottom: 16px;
+  transform: translate(-50%, 32px); /* start slightly lower */
+  max-width: 680px;
+  width: calc(100% - 24px);
+  background: #111;
+  color: #fff;
+  border: 1px solid #ffffff22;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px #00000055;
+  z-index: 99999;
+  font: 14px/1.4 system-ui, Segoe UI, Roboto, Helvetica, Arial;
+
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    opacity 0.25s ease-out,
+    transform 0.25s ease-out;
+}
+
+#ptb-consent.ptb-open {
+  opacity: 1;
+  transform: translate(-50%, 0);
+  pointer-events: auto;
+}
+
+#ptb-consent .inner {
+  padding: 16px 16px 8px;
+}
+
+#ptb-consent h4 {
+  margin: 0 0 6px;
+  font-size: 16px;
+}
+
+#ptb-consent p {
+  margin: 0 0 10px;
+  color: #ddd;
+}
+
+#ptb-consent .row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 0 16px 16px;
+}
+
+#ptb-consent .btn {
+  appearance: none;
+  border: 1px solid #ffffff33;
+  background: #1b1b1b;
+  color: #fff;
+  padding: 8px 12px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+#ptb-consent .btn.primary {
+  background: #e11d48;
+  border-color: #e11d48;
+}
+
+#ptb-consent .btn.ghost {
+  background: transparent;
+}
+
+#ptb-consent .link {
+  color: #ffd166;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+#ptb-consent .prefs {
+  padding: 12px 16px;
+  border-top: 1px solid #ffffff22;
+  display: none;
+}
+
+#ptb-consent .pref {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 8px 0;
+}
+
+#ptb-consent .pref input {
+  width: 18px;
+  height: 18px;
+}
+
+/* Manage Cookies button */
+#ptb-manage-consent {
+  position: fixed;
+  right: 12px;
+  bottom: 12px;
+  font: 12px system-ui;
+  opacity: 0.7;
+  z-index: 99990;
+}
