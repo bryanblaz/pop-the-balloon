@@ -10,140 +10,16 @@
 </head>
 <body class="legal">
 
-  <!-- ===== Pop The Balloon • Consent Manager ===== -->
-  <style>
-    #ptb-consent-backdrop{position:fixed;inset:0;background:#0008;backdrop-filter:saturate(120%) blur(2px);display:none;z-index:99998}
-    #ptb-consent{position:fixed;left:50%;bottom:16px;transform:translateX(-50%);max-width:680px;width:calc(100% - 24px);background:#111;color:#fff;border:1px solid #ffffff22;border-radius:16px;box-shadow:0 10px 30px #00000055;z-index:99999;font:14px/1.4 system-ui, Segoe UI, Roboto, Helvetica, Arial}
-    #ptb-consent .inner{padding:16px 16px 8px}
-    #ptb-consent h4{margin:0 0 6px;font-size:16px}
-    #ptb-consent p{margin:0 0 10px;color:#ddd}
-    #ptb-consent .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:flex-end;padding:0 16px 16px}
-    #ptb-consent .btn{appearance:none;border:1px solid #ffffff33;background:#1b1b1b;color:#fff;padding:8px 12px;border-radius:10px;cursor:pointer}
-    #ptb-consent .btn.primary{background:#e11d48;border-color:#e11d48}
-    #ptb-consent .btn.ghost{background:transparent}
-    #ptb-consent .link{color:#ffd166;text-decoration:underline;cursor:pointer;font-weight:500}
-    #ptb-consent .prefs{padding:12px 16px;border-top:1px solid #ffffff22;display:none}
-    #ptb-consent .pref{display:flex;align-items:center;gap:10px;margin:8px 0}
-    #ptb-consent .pref input{width:18px;height:18px}
-    #ptb-manage-consent{position:fixed;right:12px;bottom:12px;font:12px system-ui;opacity:.7}
-  </style>
-
-  <div id="ptb-consent-backdrop"></div>
-  <div id="ptb-consent" role="dialog" aria-labelledby="ptb-consent-title" aria-modal="true" hidden>
-    <div class="inner">
-      <h4 id="ptb-consent-title">Cookies & Tracking</h4>
-      <p>We use cookies and similar tech to run the site, measure usage, fix bugs, and—if you allow—personalize. You can change your choices any time.</p>
-      <p><a class="link" href="/cookies" target="_blank" rel="noopener">Learn more</a></p>
-    </div>
-    <div class="prefs" id="ptb-prefs">
-      <div class="pref">
-        <input type="checkbox" id="ptb-strict" disabled checked>
-        <label for="ptb-strict"><b>Strictly necessary</b> (required for security and basic features)</label>
-      </div>
-      <div class="pref">
-        <input type="checkbox" id="ptb-analytics">
-        <label for="ptb-analytics"><b>Analytics & performance</b> (e.g., Google Analytics/Firebase)</label>
-      </div>
-      <div class="pref">
-        <input type="checkbox" id="ptb-crash">
-        <label for="ptb-crash"><b>Crash diagnostics</b> (e.g., Crashlytics)</label>
-      </div>
-      <div class="pref">
-        <input type="checkbox" id="ptb-ads">
-        <label for="ptb-ads"><b>Personalization & ads</b> (e.g., Meta Pixel/Ad networks)</label>
-      </div>
-    </div>
-    <div class="row">
-      <button class="btn ghost" id="ptb-customize">Customize</button>
-      <button class="btn" id="ptb-reject">Reject all</button>
-      <button class="btn primary" id="ptb-accept">Accept all</button>
-    </div>
-  </div>
-
-  <button id="ptb-manage-consent" class="btn ghost" type="button" title="Manage cookies">Cookies</button>
-
+  <!-- Consent Manager snippet -->
+  <div id="ptb-consent-container"></div>
   <script>
-  (function(){
-    const KEY='ptb_consent';
-    const state = {strict:true, analytics:false, crash:false, ads:false, timestamp:null, version:1};
-    const $ = s => document.querySelector(s);
-    const modal = $('#ptb-consent');
-    const backdrop = $('#ptb-consent-backdrop');
-    const prefs = $('#ptb-prefs');
-    const setVisible = v => { modal.hidden = !v; backdrop.style.display = v? 'block':'none'; };
-
-    function save(consent){
-      localStorage.setItem(KEY, JSON.stringify(consent));
-      setVisible(false);
-      apply(consent);
-    }
-    function load(){
-      try{ return JSON.parse(localStorage.getItem(KEY)); }catch(e){ return null }
-    }
-
-    function apply(consent){
-      if(consent.analytics){
-        if(!window.__gaLoaded){
-          window.__gaLoaded=true;
-          window.dataLayer = window.dataLayer || [];
-          function gtag(){dataLayer.push(arguments);}
-          window.gtag = gtag;
-          gtag('js', new Date());
-        }
-      }
-
-      if(consent.ads){
-        if(!window.__fbqLoaded){
-          window.__fbqLoaded=true;
-          !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-          n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
-          n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);
-          t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}
-          (window, document,'script','https://connect.facebook.net/en_US/fbevents.js');
-        }
-      } else {
-        if(window.fbq){ try{ fbq('consent','revoke'); }catch(e){} }
-      }
-    }
-
-    $('#ptb-accept').onclick = ()=>{
-      save({...state, analytics:true, crash:true, ads:true, timestamp:Date.now()});
-    };
-    $('#ptb-reject').onclick = ()=>{
-      save({...state, analytics:false, crash:false, ads:false, timestamp:Date.now()});
-    };
-    $('#ptb-customize').onclick = ()=>{
-      prefs.style.display = prefs.style.display==='block' ? 'none' : 'block';
-      if(prefs.style.display==='block'){
-        $('#ptb-analytics').checked = state.analytics;
-        $('#ptb-crash').checked = state.crash;
-        $('#ptb-ads').checked = state.ads;
-      }
-    };
-    $('#ptb-manage-consent').onclick = ()=>{ setVisible(true) };
-
-    $('#ptb-accept').addEventListener('click', ()=>{
-      if(prefs.style.display==='block'){
-        save({
-          strict:true,
-          analytics: $('#ptb-analytics').checked,
-          crash: $('#ptb-crash').checked,
-          ads: $('#ptb-ads').checked,
-          timestamp: Date.now(),
-          version:1
-        });
-      }
-    });
-
-    const existing = load();
-    if(existing){
-      apply(existing);
-    } else {
-      setVisible(true);
-    }
-  })();
+    fetch('/consent/consent.html')
+      .then(r => r.text())
+      .then(html => {
+        document.getElementById('ptb-consent-container').innerHTML = html;
+      });
   </script>
-  <!-- ===== End Consent Manager ===== -->
+  <!-- End Consent Manager snippet -->
 
   <header class="legal__header">
     <img id="logo-dark" class="brand-img" src="logo-light.png" alt="Pop The Balloon white logo" style="display:none" />
