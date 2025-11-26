@@ -11,14 +11,20 @@
 <body class="legal">
 
 	  <!-- Consent Manager snippet -->
-  <div id="ptb-consent-container"></div>
-  <script>
-    fetch('/consent/consent.html')
-      .then(r => r.text())
-      .then(html => {
-        document.getElementById('ptb-consent-container').innerHTML = html;
-      });
-  </script>
+<div id="ptb-consent-container"></div>
+<script>
+  fetch('/consent/consent.html')
+    .then(r => r.text())
+    .then(html => {
+      document.getElementById('ptb-consent-container').innerHTML = html;
+
+      // Load consent.js AFTER the HTML is in the DOM
+      const script = document.createElement('script');
+      script.src = '/consent/consent.js';
+      document.body.appendChild(script);
+    });
+</script>
+
   <!-- End Consent Manager snippet -->
 	
   <header class="legal__header">
