@@ -2,23 +2,159 @@
 <html lang="en" data-theme="auto">
 <head>
   <meta charset="utf-8" />
-	<link rel="shortcut icon" type="x-icon" href="https://i.ibb.co/5X6z2dDT/favicon2.png">
+  <link rel="shortcut icon" type="x-icon" href="https://i.ibb.co/5X6z2dDT/favicon2.png">
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Terms of Service · Pop The Balloon — The Dating App</title>
   <link rel="stylesheet" href="styles.css" />
   <meta name="color-scheme" content="dark light">
 </head>
 <body class="legal">
+
+  <!-- ===== Pop The Balloon • Consent Manager ===== -->
+  <style>
+    #ptb-consent-backdrop{position:fixed;inset:0;background:#0008;backdrop-filter:saturate(120%) blur(2px);display:none;z-index:99998}
+    #ptb-consent{position:fixed;left:50%;bottom:16px;transform:translateX(-50%);max-width:680px;width:calc(100% - 24px);background:#111;color:#fff;border:1px solid #ffffff22;border-radius:16px;box-shadow:0 10px 30px #00000055;z-index:99999;font:14px/1.4 system-ui, Segoe UI, Roboto, Helvetica, Arial}
+    #ptb-consent .inner{padding:16px 16px 8px}
+    #ptb-consent h4{margin:0 0 6px;font-size:16px}
+    #ptb-consent p{margin:0 0 10px;color:#ddd}
+    #ptb-consent .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:flex-end;padding:0 16px 16px}
+    #ptb-consent .btn{appearance:none;border:1px solid #ffffff33;background:#1b1b1b;color:#fff;padding:8px 12px;border-radius:10px;cursor:pointer}
+    #ptb-consent .btn.primary{background:#e11d48;border-color:#e11d48}
+    #ptb-consent .btn.ghost{background:transparent}
+    #ptb-consent .link{color:#ffd166;text-decoration:underline;cursor:pointer;font-weight:500}
+    #ptb-consent .prefs{padding:12px 16px;border-top:1px solid #ffffff22;display:none}
+    #ptb-consent .pref{display:flex;align-items:center;gap:10px;margin:8px 0}
+    #ptb-consent .pref input{width:18px;height:18px}
+    #ptb-manage-consent{position:fixed;right:12px;bottom:12px;font:12px system-ui;opacity:.7}
+  </style>
+
+  <div id="ptb-consent-backdrop"></div>
+  <div id="ptb-consent" role="dialog" aria-labelledby="ptb-consent-title" aria-modal="true" hidden>
+    <div class="inner">
+      <h4 id="ptb-consent-title">Cookies & Tracking</h4>
+      <p>We use cookies and similar tech to run the site, measure usage, fix bugs, and—if you allow—personalize. You can change your choices any time.</p>
+      <p><a class="link" href="/cookies" target="_blank" rel="noopener">Learn more</a></p>
+    </div>
+    <div class="prefs" id="ptb-prefs">
+      <div class="pref">
+        <input type="checkbox" id="ptb-strict" disabled checked>
+        <label for="ptb-strict"><b>Strictly necessary</b> (required for security and basic features)</label>
+      </div>
+      <div class="pref">
+        <input type="checkbox" id="ptb-analytics">
+        <label for="ptb-analytics"><b>Analytics & performance</b> (e.g., Google Analytics/Firebase)</label>
+      </div>
+      <div class="pref">
+        <input type="checkbox" id="ptb-crash">
+        <label for="ptb-crash"><b>Crash diagnostics</b> (e.g., Crashlytics)</label>
+      </div>
+      <div class="pref">
+        <input type="checkbox" id="ptb-ads">
+        <label for="ptb-ads"><b>Personalization & ads</b> (e.g., Meta Pixel/Ad networks)</label>
+      </div>
+    </div>
+    <div class="row">
+      <button class="btn ghost" id="ptb-customize">Customize</button>
+      <button class="btn" id="ptb-reject">Reject all</button>
+      <button class="btn primary" id="ptb-accept">Accept all</button>
+    </div>
+  </div>
+
+  <button id="ptb-manage-consent" class="btn ghost" type="button" title="Manage cookies">Cookies</button>
+
+  <script>
+  (function(){
+    const KEY='ptb_consent';
+    const state = {strict:true, analytics:false, crash:false, ads:false, timestamp:null, version:1};
+    const $ = s => document.querySelector(s);
+    const modal = $('#ptb-consent');
+    const backdrop = $('#ptb-consent-backdrop');
+    const prefs = $('#ptb-prefs');
+    const setVisible = v => { modal.hidden = !v; backdrop.style.display = v? 'block':'none'; };
+
+    function save(consent){
+      localStorage.setItem(KEY, JSON.stringify(consent));
+      setVisible(false);
+      apply(consent);
+    }
+    function load(){
+      try{ return JSON.parse(localStorage.getItem(KEY)); }catch(e){ return null }
+    }
+
+    function apply(consent){
+      if(consent.analytics){
+        if(!window.__gaLoaded){
+          window.__gaLoaded=true;
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          window.gtag = gtag;
+          gtag('js', new Date());
+        }
+      }
+
+      if(consent.ads){
+        if(!window.__fbqLoaded){
+          window.__fbqLoaded=true;
+          !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+          n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+          n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);
+          t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}
+          (window, document,'script','https://connect.facebook.net/en_US/fbevents.js');
+        }
+      } else {
+        if(window.fbq){ try{ fbq('consent','revoke'); }catch(e){} }
+      }
+    }
+
+    $('#ptb-accept').onclick = ()=>{
+      save({...state, analytics:true, crash:true, ads:true, timestamp:Date.now()});
+    };
+    $('#ptb-reject').onclick = ()=>{
+      save({...state, analytics:false, crash:false, ads:false, timestamp:Date.now()});
+    };
+    $('#ptb-customize').onclick = ()=>{
+      prefs.style.display = prefs.style.display==='block' ? 'none' : 'block';
+      if(prefs.style.display==='block'){
+        $('#ptb-analytics').checked = state.analytics;
+        $('#ptb-crash').checked = state.crash;
+        $('#ptb-ads').checked = state.ads;
+      }
+    };
+    $('#ptb-manage-consent').onclick = ()=>{ setVisible(true) };
+
+    $('#ptb-accept').addEventListener('click', ()=>{
+      if(prefs.style.display==='block'){
+        save({
+          strict:true,
+          analytics: $('#ptb-analytics').checked,
+          crash: $('#ptb-crash').checked,
+          ads: $('#ptb-ads').checked,
+          timestamp: Date.now(),
+          version:1
+        });
+      }
+    });
+
+    const existing = load();
+    if(existing){
+      apply(existing);
+    } else {
+      setVisible(true);
+    }
+  })();
+  </script>
+  <!-- ===== End Consent Manager ===== -->
+
   <header class="legal__header">
     <img id="logo-dark" class="brand-img" src="logo-light.png" alt="Pop The Balloon white logo" style="display:none" />
     <img id="logo-light" class="brand-img" src="logo-dark.png" alt="Pop The Balloon black logo" style="display:none" />
 
     <nav class="legal__nav" aria-label="Legal links">
-	<a href="home.html" class="legal__nav-link">Home</a>
+      <a href="home.html" class="legal__nav-link">Home</a>
       <a href="index.html" aria-current="page" class="legal__nav-link is-active">Terms of Service</a>
       <a href="privacy.html" class="legal__nav-link">Privacy Policy</a>
       <a href="safety.html" class="legal__nav-link">User Safety & Reporting</a>
-	  <a href="contact.html" class="legal__nav-link">Contact Us</a>
+      <a href="contact.html" class="legal__nav-link">Contact Us</a>
     </nav>
 
     <div class="theme-toggle">
@@ -37,7 +173,10 @@
     </section>
   </main>
 
-  <footer class="legal__footer"><p>© <span id="y"></span> Pop The Balloon The Dating App</p></footer>
+  <footer class="legal__footer">
+    <p>© <span id="y"></span> Pop The Balloon The Dating App</p>
+  </footer>
+
   <script>
     (document.getElementById('y')||{}).textContent = new Date().getFullYear();
     const KEY='ptb_theme', root=document.documentElement;
@@ -45,6 +184,7 @@
     const label=()=>btn && btn.querySelector('.theme-toggle__label');
     const icon =()=>btn && btn.querySelector('.theme-toggle__icon');
     const prefersDark = () => matchMedia('(prefers-color-scheme: dark)').matches;
+
     function applyTheme(mode, withTransition=false){
       if(withTransition){ 
         root.classList.add('theme-transition');
@@ -58,22 +198,30 @@
       const eff = mode==='auto' ? (prefersDark()?'dark':'light') : mode;
       if(label()) label().textContent = eff==='dark'?'Dark':'Light';
       if(icon())  icon().textContent  = eff==='dark'?'🌙':'☀️';
+
       const logoDark = document.getElementById('logo-dark');
       const logoLight = document.getElementById('logo-light');
       const useDark = eff === 'dark';
-      if(logoDark && logoLight){ logoDark.style.display = useDark ? 'inline-block' : 'none'; logoLight.style.display = useDark ? 'none' : 'inline-block'; }
+      if(logoDark && logoLight){
+        logoDark.style.display = useDark ? 'inline-block' : 'none';
+        logoLight.style.display = useDark ? 'none' : 'inline-block';
+      }
     }
+
     function getSaved(){ return localStorage.getItem(KEY) || 'auto'; }
     function cycle(){
       const curr=root.getAttribute('data-theme')||'auto';
       const next= curr==='auto'?'dark':curr==='dark'?'light':'auto';
       localStorage.setItem(KEY,next); applyTheme(next, true);
     }
+
     applyTheme(getSaved());
     if(btn) btn.addEventListener('click', cycle);
+
     matchMedia('(prefers-color-scheme: dark)').addEventListener('change', ()=>{
       if((localStorage.getItem(KEY)||'auto')==='auto') applyTheme('auto', true);
     });
   </script>
+
 </body>
 </html>
