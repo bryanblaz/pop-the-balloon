@@ -26,6 +26,18 @@
   <meta name="color-scheme" content="dark light">
 </head>
 <body class="legal">
+
+  <!-- Consent Manager snippet -->
+  <div id="ptb-consent-container"></div>
+  <script>
+    fetch('/consent/consent.html')
+      .then(r => r.text())
+      .then(html => {
+        document.getElementById('ptb-consent-container').innerHTML = html;
+      });
+  </script>
+  <!-- End Consent Manager snippet -->
+	
   <header class="legal__header">
     <div class="theme-toggle">
       <button id="themeBtn" class="theme-toggle__btn" type="button"><span class="theme-toggle__icon" aria-hidden="true">🌙</span><span class="theme-toggle__label">Dark</span></button>
