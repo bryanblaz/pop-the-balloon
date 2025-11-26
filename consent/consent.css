@@ -1,3 +1,4 @@
+/* Backdrop */
 #ptb-consent-backdrop {
   position: fixed;
   inset: 0;
@@ -5,13 +6,20 @@
   backdrop-filter: saturate(120%) blur(2px);
   display: none;
   z-index: 99998;
+  opacity: 0;
+  transition: opacity 0.25s ease-out;
 }
 
+#ptb-consent-backdrop.ptb-open {
+  opacity: 1;
+}
+
+/* Banner */
 #ptb-consent {
   position: fixed;
   left: 50%;
   bottom: 16px;
-  transform: translateX(-50%);
+  transform: translate(-50%, 32px); /* start slightly lower */
   max-width: 680px;
   width: calc(100% - 24px);
   background: #111;
@@ -21,6 +29,18 @@
   box-shadow: 0 10px 30px #00000055;
   z-index: 99999;
   font: 14px/1.4 system-ui, Segoe UI, Roboto, Helvetica, Arial;
+
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    opacity 0.25s ease-out,
+    transform 0.25s ease-out;
+}
+
+#ptb-consent.ptb-open {
+  opacity: 1;
+  transform: translate(-50%, 0);
+  pointer-events: auto;
 }
 
 #ptb-consent .inner {
@@ -89,6 +109,7 @@
   height: 18px;
 }
 
+/* Manage Cookies button */
 #ptb-manage-consent {
   position: fixed;
   right: 12px;
