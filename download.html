@@ -34,8 +34,26 @@
       width: min(360px, 70vw);
       height: auto;
       display: block;
-      animation: float 4s ease-in-out infinite;
       filter: drop-shadow(0 18px 28px rgba(0, 0, 0, 0.28));
+      animation-name: downloadBalloonFloat;
+      animation-duration: 4s;
+      animation-timing-function: ease-in-out;
+      animation-iteration-count: infinite;
+      will-change: transform;
+    }
+
+    @keyframes downloadBalloonFloat {
+      0% {
+        transform: translateY(0);
+      }
+
+      50% {
+        transform: translateY(-18px);
+      }
+
+      100% {
+        transform: translateY(0);
+      }
     }
 
     .download-buttons {
