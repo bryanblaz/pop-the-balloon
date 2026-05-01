@@ -1,0 +1,276 @@
+<!doctype html>
+<html lang="en" data-theme="auto">
+<head>
+  <meta charset="utf-8" />
+  <link rel="shortcut icon" type="x-icon" href="https://i.ibb.co/5X6z2dDT/favicon2.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Download · Pop The Balloon — The Dating App</title>
+  <link rel="stylesheet" href="styles.css" />
+  <meta name="color-scheme" content="dark light">
+
+  <style>
+    /* Download page only */
+    .download-page-wrap {
+      flex: 1;
+      width: 100%;
+      max-width: 900px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: clamp(18px, 4vw, 40px);
+    }
+
+    .download-card {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      gap: 22px;
+    }
+
+    .download-title {
+      margin: 0;
+      font-size: clamp(22px, 4vw, 38px);
+      font-weight: 900;
+      color: var(--accent);
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    .download-balloon {
+      width: min(360px, 70vw);
+      height: auto;
+      display: block;
+      animation: float 4s ease-in-out infinite;
+      filter: drop-shadow(0 18px 28px rgba(0, 0, 0, 0.28));
+    }
+
+    .download-buttons {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      width: 100%;
+      margin-top: 4px;
+    }
+
+    .store-link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 0;
+      text-decoration: none;
+      border-radius: 12px;
+    }
+
+    .store-badge {
+      width: min(280px, 78vw);
+      height: auto;
+      display: block;
+      transition: filter .6s ease, opacity .25s ease, transform .25s ease;
+    }
+
+    .store-link:hover .store-badge {
+      transform: translateY(-2px);
+      opacity: 0.92;
+    }
+
+    /*
+      Light background = black badges.
+      Dark background = white badges.
+      This works best if your uploaded SVGs are solid black/transparent.
+    */
+    :root[data-theme="light"] .store-badge {
+      filter: brightness(0);
+    }
+
+    :root[data-theme="dark"] .store-badge {
+      filter: brightness(0) invert(1);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root[data-theme="auto"] .store-badge {
+        filter: brightness(0) invert(1);
+      }
+    }
+
+    @media (prefers-color-scheme: light) {
+      :root[data-theme="auto"] .store-badge {
+        filter: brightness(0);
+      }
+    }
+
+    .download-note {
+      color: var(--muted);
+      font-size: clamp(12px, 2vw, 14px);
+      margin: 0;
+      max-width: 520px;
+      line-height: 1.6;
+    }
+
+    @media (max-width: 600px) {
+      .download-page-wrap {
+        padding-top: 22px;
+      }
+
+      .download-balloon {
+        width: min(320px, 74vw);
+      }
+
+      .store-badge {
+        width: min(250px, 76vw);
+      }
+    }
+  </style>
+</head>
+
+<body class="legal">
+
+  <!-- Consent Manager snippet -->
+  <div id="ptb-consent-container"></div>
+  <script>
+    fetch('/consent/consent.html')
+      .then(r => r.text())
+      .then(html => {
+        document.getElementById('ptb-consent-container').innerHTML = html;
+
+        const script = document.createElement('script');
+        script.src = '/consent/consent.js';
+        document.body.appendChild(script);
+      });
+  </script>
+  <!-- End Consent Manager snippet -->
+
+  <header class="legal__header">
+    <img id="logo-dark" class="brand-img" src="logo-light.png" alt="Pop The Balloon white logo" style="display:none" />
+    <img id="logo-light" class="brand-img" src="logo-dark.png" alt="Pop The Balloon black logo" style="display:none" />
+
+    <nav class="legal__nav" aria-label="Legal links">
+      <a href="home.html" class="legal__nav-link">Home</a>
+      <a href="download.html" class="legal__nav-link" aria-current="page">Download</a>
+      <a href="index.html" class="legal__nav-link">Terms of Service</a>
+      <a href="privacy.html" class="legal__nav-link">Privacy Policy</a>
+      <a href="safety.html" class="legal__nav-link">User Safety &amp; Reporting</a>
+      <a href="contact.html" class="legal__nav-link">Contact Us</a>
+      <a href="faq.html" class="legal__nav-link">FAQ</a>
+    </nav>
+
+    <div class="theme-toggle">
+      <button id="themeBtn" class="theme-toggle__btn" type="button">
+        <span class="theme-toggle__icon" aria-hidden="true">🌙</span>
+        <span class="theme-toggle__label">Dark</span>
+      </button>
+    </div>
+  </header>
+
+  <main class="download-page-wrap">
+    <section class="download-card" aria-label="Download Pop The Balloon">
+  
+
+      <img
+        src="balloon-round.png"
+        alt="Pop The Balloon red balloon"
+        class="download-balloon"
+      />
+
+      <div class="download-buttons">
+        <!-- PUT YOUR IOS APP STORE OR TESTFLIGHT LINK BELOW -->
+        <a
+          class="store-link"
+          href="YOUR_IOS_LINK_HERE"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Download on the App Store">
+          <img
+            src="app-store.svg"
+            alt="Download on the App Store"
+            class="store-badge"
+          />
+        </a>
+
+        <!-- PUT YOUR ANDROID GOOGLE PLAY LINK BELOW -->
+        <a
+          class="store-link"
+          href="YOUR_ANDROID_LINK_HERE"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Get it on Google Play">
+          <img
+            src="google-play.svg"
+            alt="Get it on Google Play"
+            class="store-badge"
+          />
+        </a>
+      </div>
+
+      <p class="download-note">
+        Available for iOS and Android.
+      </p>
+    </section>
+  </main>
+
+  <footer class="legal__footer">
+    <p>© <span id="y"></span> Pop The Balloon The Dating App</p>
+  </footer>
+
+  <script>
+    (document.getElementById('y') || {}).textContent = new Date().getFullYear();
+
+    const KEY = 'ptb_theme', root = document.documentElement;
+    const btn = document.getElementById('themeBtn');
+    const label = () => btn && btn.querySelector('.theme-toggle__label');
+    const icon = () => btn && btn.querySelector('.theme-toggle__icon');
+    const prefersDark = () => matchMedia('(prefers-color-scheme: dark)').matches;
+
+    function applyTheme(mode, withTransition = false) {
+      if (withTransition) {
+        root.classList.add('theme-transition');
+        requestAnimationFrame(() => {
+          root.setAttribute('data-theme', mode);
+          setTimeout(() => root.classList.remove('theme-transition'), 650);
+        });
+      } else {
+        root.setAttribute('data-theme', mode);
+      }
+
+      const eff = mode === 'auto' ? (prefersDark() ? 'dark' : 'light') : mode;
+
+      if (label()) label().textContent = eff === 'dark' ? 'Dark' : 'Light';
+      if (icon()) icon().textContent = eff === 'dark' ? '🌙' : '☀️';
+
+      const logoDark = document.getElementById('logo-dark');
+      const logoLight = document.getElementById('logo-light');
+      const useDark = eff === 'dark';
+
+      if (logoDark && logoLight) {
+        logoDark.style.display = useDark ? 'inline-block' : 'none';
+        logoLight.style.display = useDark ? 'none' : 'inline-block';
+      }
+    }
+
+    function getSaved() {
+      return localStorage.getItem(KEY) || 'auto';
+    }
+
+    function cycle() {
+      const curr = root.getAttribute('data-theme') || 'auto';
+      const next = curr === 'auto' ? 'dark' : curr === 'dark' ? 'light' : 'auto';
+      localStorage.setItem(KEY, next);
+      applyTheme(next, true);
+    }
+
+    applyTheme(getSaved());
+
+    if (btn) btn.addEventListener('click', cycle);
+
+    matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+      if ((localStorage.getItem(KEY) || 'auto') === 'auto') {
+        applyTheme('auto', true);
+      }
+    });
+  </script>
+</body>
+</html>
