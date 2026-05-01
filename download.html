@@ -30,15 +30,6 @@
       gap: 22px;
     }
 
-    .download-title {
-      margin: 0;
-      font-size: clamp(22px, 4vw, 38px);
-      font-weight: 900;
-      color: var(--accent);
-      letter-spacing: 0.5px;
-      text-transform: uppercase;
-    }
-
     .download-balloon {
       width: min(360px, 70vw);
       height: auto;
@@ -67,40 +58,15 @@
     }
 
     .store-badge {
-      width: min(280px, 78vw);
+      width: min(185px, 55vw);
       height: auto;
-      display: block;
-      transition: filter .6s ease, opacity .25s ease, transform .25s ease;
+      display: none;
+      transition: opacity .25s ease, transform .25s ease;
     }
 
     .store-link:hover .store-badge {
       transform: translateY(-2px);
       opacity: 0.92;
-    }
-
-    /*
-      Light background = black badges.
-      Dark background = white badges.
-      This works best if your uploaded SVGs are solid black/transparent.
-    */
-    :root[data-theme="light"] .store-badge {
-      filter: brightness(0);
-    }
-
-    :root[data-theme="dark"] .store-badge {
-      filter: brightness(0) invert(1);
-    }
-
-    @media (prefers-color-scheme: dark) {
-      :root[data-theme="auto"] .store-badge {
-        filter: brightness(0) invert(1);
-      }
-    }
-
-    @media (prefers-color-scheme: light) {
-      :root[data-theme="auto"] .store-badge {
-        filter: brightness(0);
-      }
     }
 
     .download-note {
@@ -121,7 +87,7 @@
       }
 
       .store-badge {
-        width: min(250px, 76vw);
+        width: min(175px, 55vw);
       }
     }
   </style>
@@ -168,7 +134,6 @@
 
   <main class="download-page-wrap">
     <section class="download-card" aria-label="Download Pop The Balloon">
-  
 
       <img
         src="balloon-round.png"
@@ -177,6 +142,7 @@
       />
 
       <div class="download-buttons">
+
         <!-- PUT YOUR IOS APP STORE OR TESTFLIGHT LINK BELOW -->
         <a
           class="store-link"
@@ -184,8 +150,19 @@
           target="_blank"
           rel="noopener noreferrer"
           aria-label="Download on the App Store">
+
+          <!-- White App Store badge for dark background -->
           <img
-            src="app-store.svg"
+            id="ios-light"
+            src="logo-ios-light.svg"
+            alt="Download on the App Store"
+            class="store-badge"
+          />
+
+          <!-- Black App Store badge for white background -->
+          <img
+            id="ios-dark"
+            src="logo-ios-dark.svg"
             alt="Download on the App Store"
             class="store-badge"
           />
@@ -198,8 +175,19 @@
           target="_blank"
           rel="noopener noreferrer"
           aria-label="Get it on Google Play">
+
+          <!-- White Google Play badge for dark background -->
           <img
-            src="google-play.svg"
+            id="android-light"
+            src="logo-android-light.svg"
+            alt="Get it on Google Play"
+            class="store-badge"
+          />
+
+          <!-- Black Google Play badge for white background -->
+          <img
+            id="android-dark"
+            src="logo-android-dark.svg"
             alt="Get it on Google Play"
             class="store-badge"
           />
@@ -243,11 +231,28 @@
 
       const logoDark = document.getElementById('logo-dark');
       const logoLight = document.getElementById('logo-light');
+
+      const iosLight = document.getElementById('ios-light');
+      const iosDark = document.getElementById('ios-dark');
+
+      const androidLight = document.getElementById('android-light');
+      const androidDark = document.getElementById('android-dark');
+
       const useDark = eff === 'dark';
 
       if (logoDark && logoLight) {
         logoDark.style.display = useDark ? 'inline-block' : 'none';
         logoLight.style.display = useDark ? 'none' : 'inline-block';
+      }
+
+      if (iosLight && iosDark) {
+        iosLight.style.display = useDark ? 'block' : 'none';
+        iosDark.style.display = useDark ? 'none' : 'block';
+      }
+
+      if (androidLight && androidDark) {
+        androidLight.style.display = useDark ? 'block' : 'none';
+        androidDark.style.display = useDark ? 'none' : 'block';
       }
     }
 
