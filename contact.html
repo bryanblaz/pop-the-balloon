@@ -7,54 +7,154 @@
   <title>Contact Us • Pop The Balloon — The Dating App</title>
   <link rel="stylesheet" href="styles.css" />
   <meta name="color-scheme" content="dark light">
+
   <style>
     /* Contact card + form styles (uses site CSS variables) */
     .contact {
-      display: grid; grid-template-columns: 1fr 1fr; gap: clamp(16px, 5vw, 64px);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: clamp(16px, 5vw, 64px);
       align-items: start;
     }
-    @media (max-width: 900px){ .contact { grid-template-columns: 1fr; } }
-    .card {
-      background: var(--card); color: var(--fg);
-      border: 1px solid var(--card-border); border-radius: 16px;
-      box-shadow: var(--shadow); padding: clamp(16px, 3vw, 24px);
+
+    @media (max-width: 900px) {
+      .contact {
+        grid-template-columns: 1fr;
+      }
     }
-    .card h1 { margin: 0 0 8px; font-size: clamp(18px, 4vw, 24px); }
-    .muted { color: var(--muted); font-size: 14px; margin: 0 0 16px; }
-    form .row { display: grid; gap: 12px; margin: 12px 0; }
-    @media (min-width: 700px){ form .row.cols-2 { grid-template-columns: 1fr 1fr; } }
-    label { font-size: 13px; color: var(--muted); }
-    input, select, textarea {
-      width: 100%; box-sizing: border-box;
-      padding: 12px 14px; border-radius: 10px;
-      background: var(--card); color: var(--fg);
+
+    .card {
+      background: var(--card);
+      color: var(--fg);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      box-shadow: var(--shadow);
+      padding: clamp(16px, 3vw, 24px);
+    }
+
+    .card h1 {
+      margin: 0 0 8px;
+      font-size: clamp(18px, 4vw, 24px);
+    }
+
+    .muted {
+      color: var(--muted);
+      font-size: 14px;
+      margin: 0 0 16px;
+    }
+
+    form .row {
+      display: grid;
+      gap: 12px;
+      margin: 12px 0;
+    }
+
+    @media (min-width: 700px) {
+      form .row.cols-2 {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    label {
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 12px 14px;
+      border-radius: 10px;
+      background: var(--card);
+      color: var(--fg);
       border: 1px solid var(--card-border);
       font: inherit;
     }
-    textarea { min-height: 140px; resize: vertical; }
-    .actions { display: flex; gap: 12px; align-items: center; margin-top: 8px; }
+
+    textarea {
+      min-height: 140px;
+      resize: vertical;
+    }
+
+    .actions {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      margin-top: 8px;
+    }
+
     .btn {
-      display: inline-flex; justify-content: center; align-items: center; gap: 8px;
-      padding: 12px 16px; border-radius: 999px; border: 1px solid var(--card-border);
-      background: var(--card); color: var(--fg); cursor: pointer; box-shadow: var(--shadow);
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 16px;
+      border-radius: 999px;
+      border: 1px solid var(--card-border);
+      background: var(--card);
+      color: var(--fg);
+      cursor: pointer;
+      box-shadow: var(--shadow);
       font-weight: 700;
     }
-    .btn.primary { background: #e11d48; color: white; border-color: #e11d48; }
-    .btn[disabled] { opacity: .6; cursor: not-allowed; }
-    .note { font-size: 12px; color: var(--muted); }
-    .msg { margin-top: 10px; font-size: 14px; }
-    .msg.error { color: #ff4b4b; white-space: pre-wrap; }
-    .msg.success { color: #22c55e; }
+
+    .btn.primary {
+      background: #e11d48;
+      color: white;
+      border-color: #e11d48;
+    }
+
+    .btn[disabled] {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .note {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .msg {
+      margin-top: 10px;
+      font-size: 14px;
+    }
+
+    .msg.error {
+      color: #ff4b4b;
+      white-space: pre-wrap;
+    }
+
+    .msg.success {
+      color: #22c55e;
+    }
 
     /* Floating logo replaces heart */
     .floating-logo {
       width: min(500px, 100%);
-	    margin-top: 150px;
-      display: flex; justify-content: center; align-items: center;
+      margin-top: 150px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
       animation: float 4s ease-in-out infinite;
     }
-    .floating-logo .brand-img { width: 100%; height: auto; }
-    @keyframes float { 0%,100% { transform: translateY(0) } 50% { transform: translateY(-10px) } }
+
+    .floating-logo .brand-img {
+      width: 100%;
+      height: auto;
+    }
+
+    @keyframes float {
+      0%,
+      100% {
+        transform: translateY(0);
+      }
+
+      50% {
+        transform: translateY(-10px);
+      }
+    }
   </style>
 
   <!-- Firebase -->
@@ -64,33 +164,33 @@
 
 <body class="legal">
 
-	  <!-- Consent Manager snippet -->
-<div id="ptb-consent-container"></div>
-<script>
-  fetch('/consent/consent.html')
-    .then(r => r.text())
-    .then(html => {
-      document.getElementById('ptb-consent-container').innerHTML = html;
+  <!-- Consent Manager snippet -->
+  <div id="ptb-consent-container"></div>
+  <script>
+    fetch('/consent/consent.html')
+      .then(r => r.text())
+      .then(html => {
+        document.getElementById('ptb-consent-container').innerHTML = html;
 
-      // Load consent.js AFTER the HTML is in the DOM
-      const script = document.createElement('script');
-      script.src = '/consent/consent.js';
-      document.body.appendChild(script);
-    });
-</script>
-
+        // Load consent.js AFTER the HTML is in the DOM
+        const script = document.createElement('script');
+        script.src = '/consent/consent.js';
+        document.body.appendChild(script);
+      });
+  </script>
   <!-- End Consent Manager snippet -->
-	
+
   <header class="legal__header">
     <nav class="legal__nav" aria-label="Site links">
       <a href="home.html">Home</a>
       <a href="index.html">Terms of Service</a>
       <a href="privacy.html">Privacy Policy</a>
       <a href="safety.html">User Safety &amp; Reporting</a>
-		<a href="download.html" class="legal__nav-link">Download</a>
+      <a href="download.html" class="legal__nav-link">Download</a>
       <a href="contact.html" aria-current="page" class="legal__nav-link is-active">Contact Us</a>
-	  <a href="faq.html" class="legal__nav-link">FAQ</a>
+      <a href="faq.html" class="legal__nav-link">FAQ</a>
     </nav>
+
     <div class="theme-toggle">
       <button id="themeBtn" class="theme-toggle__btn" type="button">
         <span class="theme-toggle__icon" aria-hidden="true">🌙</span>
@@ -104,8 +204,20 @@
       <div class="split__left">
         <!-- Floating logo that swaps between dark/light -->
         <div class="floating-logo">
-          <img id="logo-dark" class="brand-img" src="logo-light.png" alt="Pop The Balloon white logo" style="display:none" />
-          <img id="logo-light" class="brand-img" src="logo-dark.png" alt="Pop The Balloon black logo" style="display:none" />
+          <img
+            id="logo-dark"
+            class="brand-img"
+            src="logo-light.png"
+            alt="Pop The Balloon white logo"
+            style="display:none"
+          />
+          <img
+            id="logo-light"
+            class="brand-img"
+            src="logo-dark.png"
+            alt="Pop The Balloon black logo"
+            style="display:none"
+          />
         </div>
 
         <nav class="vlinks" aria-label="Helpful">
@@ -118,7 +230,12 @@
       <div class="split__right">
         <section class="card" aria-labelledby="h1">
           <h1 id="h1">Contact Pop&nbsp;The&nbsp;Balloon</h1>
-          <p class="muted">Questions, feedback, or a partnership idea? Drop a note. For urgent safety concerns, use the <a href="safety.html">Safety &amp; Reporting</a> page.</p>
+
+          <p class="muted">
+            Questions, feedback, or a partnership idea? Drop a note.
+            For urgent safety concerns, use the
+            <a href="safety.html">Safety &amp; Reporting</a> page.
+          </p>
 
           <form id="contactForm" novalidate>
             <div class="row cols-2">
@@ -126,6 +243,7 @@
                 <label for="name">Full name</label>
                 <input id="name" name="name" type="text" autocomplete="name" required />
               </div>
+
               <div>
                 <label for="email">Email</label>
                 <input id="email" name="email" type="email" autocomplete="email" required />
@@ -137,6 +255,7 @@
                 <label for="subject">Subject</label>
                 <input id="subject" name="subject" type="text" maxlength="120" required />
               </div>
+
               <div>
                 <label for="category">Category</label>
                 <select id="category" name="category" required>
@@ -157,7 +276,13 @@
             <div class="row">
               <div>
                 <label for="message">Message</label>
-                <textarea id="message" name="message" minlength="10" maxlength="5000" required></textarea>
+                <textarea
+                  id="message"
+                  name="message"
+                  minlength="10"
+                  maxlength="5000"
+                  required
+                ></textarea>
               </div>
             </div>
 
@@ -165,9 +290,11 @@
               <button id="sendBtn" class="btn primary" type="submit">Send message</button>
               <span id="status" class="note" role="status" aria-live="polite"></span>
             </div>
+
             <div id="feedback" class="msg" aria-live="polite"></div>
 
-            <p class="note">By contacting us you agree to our
+            <p class="note">
+              By contacting us you agree to our
               <a href="privacy.html">Privacy Policy</a>. We store your message so we can respond.
             </p>
           </form>
@@ -176,49 +303,71 @@
     </div>
   </main>
 
-  <footer class="legal__footer"><p>© <span id="y"></span> PTB The Dating App</p></footer>
+  <footer class="legal__footer">
+    <p>© <span id="y"></span> PTB The Dating App</p>
+  </footer>
 
   <script>
-    (document.getElementById('y')||{}).textContent = new Date().getFullYear();
+    (document.getElementById('y') || {}).textContent = new Date().getFullYear();
 
     // THEME TOGGLE (Auto → Dark → Light) — matches the rest of the site
-    const KEY='ptb_theme', root=document.documentElement;
-    const btn=document.getElementById('themeBtn');
-    const label=()=>btn && btn.querySelector('.theme-toggle__label');
-    const icon =()=>btn && btn.querySelector('.theme-toggle__icon');
+    const KEY = 'ptb_theme';
+    const root = document.documentElement;
+    const btn = document.getElementById('themeBtn');
+    const label = () => btn && btn.querySelector('.theme-toggle__label');
+    const icon = () => btn && btn.querySelector('.theme-toggle__icon');
     const prefersDark = () => matchMedia('(prefers-color-scheme: dark)').matches;
-    function applyTheme(mode, withTransition=false){
-      if(withTransition){
+
+    function applyTheme(mode, withTransition = false) {
+      if (withTransition) {
         root.classList.add('theme-transition');
-        requestAnimationFrame(()=>{
+
+        requestAnimationFrame(() => {
           root.setAttribute('data-theme', mode);
-          setTimeout(()=>root.classList.remove('theme-transition'), 650);
+          setTimeout(() => root.classList.remove('theme-transition'), 650);
         });
-      } else { root.setAttribute('data-theme', mode); }
-      const eff = mode==='auto' ? (prefersDark()?'dark':'light') : mode;
-      if(label()) label().textContent = eff==='dark' ? 'Dark' : 'Light';
-      if(icon())  icon().textContent  = eff==='dark' ? '🌙' : '☀️';
+      } else {
+        root.setAttribute('data-theme', mode);
+      }
+
+      const eff = mode === 'auto' ? (prefersDark() ? 'dark' : 'light') : mode;
+
+      if (label()) label().textContent = eff === 'dark' ? 'Dark' : 'Light';
+      if (icon()) icon().textContent = eff === 'dark' ? '🌙' : '☀️';
 
       // Toggle which logo shows based on effective theme
       const logoDark = document.getElementById('logo-dark');
       const logoLight = document.getElementById('logo-light');
       const useDark = eff === 'dark';
-      if(logoDark && logoLight){
+
+      if (logoDark && logoLight) {
         logoDark.style.display = useDark ? 'inline-block' : 'none';
         logoLight.style.display = useDark ? 'none' : 'inline-block';
       }
     }
-    function getSaved(){ return localStorage.getItem(KEY) || 'auto'; }
-    function cycle(){
-      const curr=root.getAttribute('data-theme')||'auto';
-      const next= curr==='auto' ? 'dark' : (curr==='dark' ? 'light' : 'auto');
+
+    function getSaved() {
+      return localStorage.getItem(KEY) || 'auto';
+    }
+
+    function cycle() {
+      const curr = root.getAttribute('data-theme') || 'auto';
+      const next = curr === 'auto' ? 'dark' : (curr === 'dark' ? 'light' : 'auto');
+
       localStorage.setItem(KEY, next);
       applyTheme(next, true);
     }
+
     applyTheme(getSaved());
-    if(btn) btn.addEventListener('click', cycle);
-    matchMedia('(prefers-color-scheme: dark)').addEventListener('change', ()=>{
-      if((localStorage.getItem(KEY)||'auto')==='auto') applyTheme('auto', true);
+
+    if (btn) {
+      btn.addEventListener('click', cycle);
+    }
+
+    matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+      if ((localStorage.getItem(KEY) || 'auto') === 'auto') {
+        applyTheme('auto', true);
+      }
     });
   </script>
 
@@ -232,7 +381,11 @@
       messagingSenderId: "112229962313",
       appId: "1:112229962313:web:c28b40d62fb13673018d8d"
     };
-    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+
+    if (!firebase.apps.length) {
+      firebase.initializeApp(firebaseConfig);
+    }
+
     const db = firebase.firestore();
 
     const form = document.getElementById('contactForm');
@@ -240,18 +393,26 @@
     const status = document.getElementById('status');
     const feedback = document.getElementById('feedback');
 
-    function setBusy(isBusy){
+    function setBusy(isBusy) {
       sendBtn.disabled = isBusy;
       status.textContent = isBusy ? 'Sending…' : '';
-      feedback.textContent = '';
-      feedback.className = 'msg';
+
+      // Clear old messages only when a new send starts.
+      // Do NOT clear after success/error, or the user never sees the result.
+      if (isBusy) {
+        feedback.textContent = '';
+        feedback.className = 'msg';
+      }
     }
 
-    function getValue(id){ return (document.getElementById(id)?.value || '').trim(); }
+    function getValue(id) {
+      return (document.getElementById(id)?.value || '').trim();
+    }
 
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
       setBusy(true);
+
       try {
         const name = getValue('name');
         const email = getValue('email');
@@ -263,15 +424,21 @@
         if (!name || !email || !subject || !category || !message) {
           throw new Error('Please fill out all required fields.');
         }
+
         if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
           throw new Error('Enter a valid email address.');
         }
+
         if (message.length < 10) {
           throw new Error('Message is too short.');
         }
 
         const payload = {
-          name, email, subject, category, message,
+          name,
+          email,
+          subject,
+          category,
+          message,
           createdAt: firebase.firestore.FieldValue.serverTimestamp(),
           userAgent: navigator.userAgent,
           referrer: document.referrer || null,
@@ -284,6 +451,7 @@
         feedback.className = 'msg success';
         form.reset();
       } catch (err) {
+        console.error('Contact form send failed:', err);
         feedback.textContent = err.message || String(err);
         feedback.className = 'msg error';
       } finally {
