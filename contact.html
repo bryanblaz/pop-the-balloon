@@ -11,6 +11,11 @@
 
   <title>Contact Us • Pop The Balloon — Center Stage</title>
 
+  <!-- Google Fonts for Install Banner -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Spectral+SC:wght@600;700&display=swap" rel="stylesheet">
+
   <link rel="stylesheet" href="styles.css" />
 
   <!-- PWA / Mobile Install Support -->
@@ -199,10 +204,15 @@
       background: transparent;
       border: 0;
       color: #ccc;
-      font-size: 28px;
+      font-size: 24px;
       line-height: 1;
-      padding: 0 4px;
+      padding: 0 3px;
       cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .ptb-install-close:active {
+      transform: scale(0.95);
     }
 
     .ptb-install-icon {
@@ -219,21 +229,33 @@
       min-width: 0;
     }
 
-    .ptb-install-text strong {
+    .ptb-install-title {
       display: block;
-      font-size: 15px;
-      font-weight: 700;
+      font-family: 'Anton', Arial, sans-serif;
+      font-size: 17px;
+      font-weight: 400;
+      letter-spacing: 0.4px;
+      text-transform: uppercase;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
     }
 
-    .ptb-install-text span {
+    .ptb-install-subtitle {
       display: block;
       font-size: 12px;
-      color: #bdbdbd;
+      color: #d6d6d6;
       margin-top: 2px;
       white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .ptb-install-stage {
+      font-family: 'Spectral SC', serif;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+      color: #fff;
     }
 
     .ptb-install-btn {
@@ -241,11 +263,12 @@
       color: #fff;
       border: 0;
       border-radius: 8px;
-      padding: 9px 15px;
-      font-size: 14px;
-      font-weight: 700;
+      padding: 9px 13px;
+      font-size: 13px;
+      font-weight: 800;
       cursor: pointer;
       flex-shrink: 0;
+      white-space: nowrap;
     }
 
     .ptb-install-btn:active {
@@ -259,6 +282,26 @@
         right: auto;
         width: calc(100% - 24px);
         transform: translateX(-50%);
+      }
+    }
+
+    @media (max-width: 390px) {
+      .ptb-install-title {
+        font-size: 15px;
+      }
+
+      .ptb-install-subtitle {
+        font-size: 11px;
+      }
+
+      .ptb-install-btn {
+        padding: 8px 10px;
+        font-size: 12px;
+      }
+
+      .ptb-install-icon {
+        width: 38px;
+        height: 38px;
       }
     }
   </style>
@@ -427,11 +470,13 @@
       class="ptb-install-icon">
 
     <div class="ptb-install-text">
-      <strong>Pop The Balloon</strong>
-      <span>Center Stage</span>
+      <strong class="ptb-install-title">Pop The Balloon</strong>
+      <span class="ptb-install-subtitle">
+        Get the app for the full <span class="ptb-install-stage">Center Stage</span> experience
+      </span>
     </div>
 
-    <button id="ptbInstallBtn" class="ptb-install-btn" type="button">Install</button>
+    <button id="ptbInstallBtn" class="ptb-install-btn" type="button">Install App</button>
   </div>
 
   <script>
@@ -587,11 +632,16 @@
 
   <script>
     // Bottom install banner
+    // Close button hides it, then it shows again after 3 page visits.
     (function () {
       const ANDROID_PACKAGE_ID = "com.experimentprojects.centerstage";
       const ANDROID_APP_URL = "https://play.google.com/store/apps/details?id=" + ANDROID_PACKAGE_ID;
 
       const IOS_APP_URL = "YOUR_IOS_APP_STORE_URL";
+
+      const CLOSE_KEY = "ptbInstallBarClosed";
+      const VISIT_KEY = "ptbInstallBarVisitsAfterClose";
+      const SHOW_AGAIN_AFTER_VISITS = 3;
 
       const bar = document.getElementById("ptbInstallBar");
       const closeBtn = document.getElementById("ptbInstallClose");
@@ -609,10 +659,24 @@
         window.matchMedia("(display-mode: standalone)").matches ||
         window.navigator.standalone === true;
 
-      const wasClosed = localStorage.getItem("ptbInstallBarClosed") === "true";
-
-      if (isStandalone || wasClosed || !bar || !closeBtn || !installBtn) {
+      if (isStandalone || !bar || !closeBtn || !installBtn) {
         return;
+      }
+
+      let wasClosed = localStorage.getItem(CLOSE_KEY) === "true";
+
+      if (wasClosed) {
+        let visits = parseInt(localStorage.getItem(VISIT_KEY) || "0", 10);
+        visits += 1;
+
+        if (visits >= SHOW_AGAIN_AFTER_VISITS) {
+          localStorage.removeItem(CLOSE_KEY);
+          localStorage.removeItem(VISIT_KEY);
+          wasClosed = false;
+        } else {
+          localStorage.setItem(VISIT_KEY, String(visits));
+          return;
+        }
       }
 
       function showInstallBar() {
@@ -623,7 +687,12 @@
       function hideInstallBar() {
         bar.hidden = true;
         document.body.classList.remove("has-install-bar");
-        localStorage.setItem("ptbInstallBarClosed", "true");
+      }
+
+      function closeInstallBar() {
+        hideInstallBar();
+        localStorage.setItem(CLOSE_KEY, "true");
+        localStorage.setItem(VISIT_KEY, "0");
       }
 
       window.addEventListener("beforeinstallprompt", function (event) {
@@ -636,7 +705,7 @@
         showInstallBar();
       }
 
-      closeBtn.addEventListener("click", hideInstallBar);
+      closeBtn.addEventListener("click", closeInstallBar);
 
       installBtn.addEventListener("click", async function () {
         if (deferredPrompt) {
