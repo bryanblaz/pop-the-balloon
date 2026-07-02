@@ -22,8 +22,8 @@
   "related_applications": [
     {
       "platform": "play",
-      "id": "YOUR_ANDROID_PACKAGE_ID",
-      "url": "https://play.google.com/store/apps/details?id=YOUR_ANDROID_PACKAGE_ID"
+      "id": "com.experimentprojects.centerstage",
+      "url": "https://play.google.com/store/apps/details?id=com.experimentprojects.centerstage"
     }
   ]
 }
