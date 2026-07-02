@@ -9,7 +9,7 @@
   <meta name="color-scheme" content="dark light">
   <meta name="theme-color" content="#050505">
 
-  <title>Pop The Balloon — Center Stage</title>
+  <title>Terms of Service • Pop The Balloon — Center Stage</title>
 
   <link rel="stylesheet" href="styles.css" />
 
@@ -56,6 +56,11 @@
       line-height: 1;
       padding: 0 4px;
       cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .ptb-install-close:active {
+      transform: scale(0.95);
     }
 
     .ptb-install-icon {
@@ -87,6 +92,8 @@
       color: #bdbdbd;
       margin-top: 2px;
       white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .ptb-install-btn {
@@ -99,6 +106,7 @@
       font-weight: 700;
       cursor: pointer;
       flex-shrink: 0;
+      white-space: nowrap;
     }
 
     .ptb-install-btn:active {
@@ -112,6 +120,26 @@
         right: auto;
         width: calc(100% - 24px);
         transform: translateX(-50%);
+      }
+    }
+
+    @media (max-width: 390px) {
+      .ptb-install-text strong {
+        font-size: 14px;
+      }
+
+      .ptb-install-text span {
+        font-size: 11px;
+      }
+
+      .ptb-install-btn {
+        padding: 8px 10px;
+        font-size: 12px;
+      }
+
+      .ptb-install-icon {
+        width: 38px;
+        height: 38px;
       }
     }
   </style>
@@ -143,9 +171,9 @@
 
     <nav class="legal__nav" aria-label="Legal links">
       <a href="home.html" class="legal__nav-link" aria-current="page">Home</a>
-      <a href="index.html" class="legal__nav-link">Terms of Service</a>
+      <a href="index.html" class="legal__nav-link is-active">Terms of Service</a>
       <a href="privacy.html" class="legal__nav-link">Privacy Policy</a>
-      <a href="safety.html" class="legal__nav-link">User Safety & Reporting</a>
+      <a href="safety.html" class="legal__nav-link">User Safety &amp; Reporting</a>
       <a href="download.html" class="legal__nav-link">Download</a>
       <a href="contact.html" class="legal__nav-link">Contact Us</a>
       <a href="faq.html" class="legal__nav-link">FAQ</a>
@@ -181,10 +209,10 @@
   <div id="ptbInstallBar" class="ptb-install-bar" hidden>
     <button id="ptbInstallClose" class="ptb-install-close" type="button" aria-label="Close install banner">×</button>
 
-<img
-  src="/balloon-round1.png"
-  alt="PTB app icon"
-  class="ptb-install-icon">
+    <img
+      src="/balloon-round1.png"
+      alt="PTB app icon"
+      class="ptb-install-icon">
 
     <div class="ptb-install-text">
       <strong>Pop The Balloon</strong>
@@ -257,13 +285,20 @@
         applyTheme('auto', true);
       }
     });
+  </script>
 
+  <script>
     // Bottom install banner
+    // Close button hides it, then it shows again after 3 page visits.
     (function () {
-const ANDROID_PACKAGE_ID = "com.experimentprojects.centerstage";
-const ANDROID_APP_URL = "https://play.google.com/store/apps/details?id=" + ANDROID_PACKAGE_ID;
+      const ANDROID_PACKAGE_ID = "com.experimentprojects.centerstage";
+      const ANDROID_APP_URL = "https://play.google.com/store/apps/details?id=" + ANDROID_PACKAGE_ID;
 
       const IOS_APP_URL = "YOUR_IOS_APP_STORE_URL";
+
+      const CLOSE_KEY = "ptbInstallBarClosed";
+      const VISIT_KEY = "ptbInstallBarVisitsAfterClose";
+      const SHOW_AGAIN_AFTER_VISITS = 3;
 
       const bar = document.getElementById("ptbInstallBar");
       const closeBtn = document.getElementById("ptbInstallClose");
@@ -281,10 +316,24 @@ const ANDROID_APP_URL = "https://play.google.com/store/apps/details?id=" + ANDRO
         window.matchMedia("(display-mode: standalone)").matches ||
         window.navigator.standalone === true;
 
-      const wasClosed = localStorage.getItem("ptbInstallBarClosed") === "true";
-
-      if (isStandalone || wasClosed || !bar || !closeBtn || !installBtn) {
+      if (isStandalone || !bar || !closeBtn || !installBtn) {
         return;
+      }
+
+      let wasClosed = localStorage.getItem(CLOSE_KEY) === "true";
+
+      if (wasClosed) {
+        let visits = parseInt(localStorage.getItem(VISIT_KEY) || "0", 10);
+        visits += 1;
+
+        if (visits >= SHOW_AGAIN_AFTER_VISITS) {
+          localStorage.removeItem(CLOSE_KEY);
+          localStorage.removeItem(VISIT_KEY);
+          wasClosed = false;
+        } else {
+          localStorage.setItem(VISIT_KEY, String(visits));
+          return;
+        }
       }
 
       function showInstallBar() {
@@ -295,22 +344,25 @@ const ANDROID_APP_URL = "https://play.google.com/store/apps/details?id=" + ANDRO
       function hideInstallBar() {
         bar.hidden = true;
         document.body.classList.remove("has-install-bar");
-        localStorage.setItem("ptbInstallBarClosed", "true");
       }
 
-      // Chrome / Android PWA prompt
+      function closeInstallBar() {
+        hideInstallBar();
+        localStorage.setItem(CLOSE_KEY, "true");
+        localStorage.setItem(VISIT_KEY, "0");
+      }
+
       window.addEventListener("beforeinstallprompt", function (event) {
         event.preventDefault();
         deferredPrompt = event;
         showInstallBar();
       });
 
-      // Show custom banner on mobile
       if (isAndroid || isIOS) {
         showInstallBar();
       }
 
-      closeBtn.addEventListener("click", hideInstallBar);
+      closeBtn.addEventListener("click", closeInstallBar);
 
       installBtn.addEventListener("click", async function () {
         if (deferredPrompt) {
@@ -322,11 +374,6 @@ const ANDROID_APP_URL = "https://play.google.com/store/apps/details?id=" + ANDRO
         }
 
         if (isAndroid) {
-          if (ANDROID_PACKAGE_ID === "YOUR_ANDROID_PACKAGE_ID") {
-            alert("Replace YOUR_ANDROID_PACKAGE_ID in the website code with your real Google Play package name.");
-            return;
-          }
-
           window.location.href = ANDROID_APP_URL;
           return;
         }
