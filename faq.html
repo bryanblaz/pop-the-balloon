@@ -2,11 +2,22 @@
 <html lang="en" data-theme="auto">
 <head>
   <meta charset="utf-8" />
-  <link rel="shortcut icon" type="x-icon" href="https://i.ibb.co/5X6z2dDT/favicon2.png">
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>FAQ · Pop The Balloon — Center Stage</title>
-  <link rel="stylesheet" href="styles.css" />
+
+  <link rel="shortcut icon" type="image/png" href="/balloon-round.png">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="color-scheme" content="dark light">
+  <meta name="theme-color" content="#050505">
+
+  <title>FAQ · Pop The Balloon — Center Stage</title>
+
+  <link rel="stylesheet" href="styles.css" />
+
+  <!-- PWA / Mobile Install Support -->
+  <link rel="manifest" href="/manifest.json">
+  <link rel="apple-touch-icon" href="/balloon-round.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="PTB Center Stage">
 
   <style>
     .faq-wrap {
@@ -41,22 +52,22 @@
     }
 
     .faq-item {
-      border: 1px solid rgba(255,255,255,0.12);
+      border: 1px solid rgba(255, 255, 255, 0.12);
       border-radius: 18px;
       overflow: hidden;
-      background: rgba(255,255,255,0.03);
+      background: rgba(255, 255, 255, 0.03);
       backdrop-filter: blur(8px);
       transition: border-color .25s ease, transform .25s ease, box-shadow .25s ease;
     }
 
     html[data-theme="light"] .faq-item {
-      border-color: rgba(0,0,0,0.10);
-      background: rgba(0,0,0,0.02);
+      border-color: rgba(0, 0, 0, 0.10);
+      background: rgba(0, 0, 0, 0.02);
     }
 
     .faq-item:hover {
       transform: translateY(-1px);
-      box-shadow: 0 10px 30px rgba(0,0,0,0.16);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.16);
     }
 
     .faq-question {
@@ -133,10 +144,125 @@
       font-size: 0.95rem;
       line-height: 1.7;
     }
+
+    /* Bottom Install Banner */
+    body.has-install-bar {
+      padding-bottom: 105px;
+    }
+
+    .ptb-install-bar {
+      position: fixed;
+      left: 12px;
+      right: 12px;
+      bottom: calc(env(safe-area-inset-bottom, 0px) + 14px);
+      z-index: 999999;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      background: rgba(18, 18, 18, 0.96);
+      color: #fff;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 16px;
+      box-shadow: 0 10px 35px rgba(0, 0, 0, 0.55);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      font-family: Arial, sans-serif;
+    }
+
+    .ptb-install-bar[hidden] {
+      display: none !important;
+    }
+
+    .ptb-install-close {
+      background: transparent;
+      border: 0;
+      color: #ccc;
+      font-size: 28px;
+      line-height: 1;
+      padding: 0 4px;
+      cursor: pointer;
+    }
+
+    .ptb-install-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 10px;
+      object-fit: cover;
+      background: #222;
+      flex-shrink: 0;
+    }
+
+    .ptb-install-text {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .ptb-install-text strong {
+      display: block;
+      font-size: 15px;
+      font-weight: 700;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .ptb-install-text span {
+      display: block;
+      font-size: 12px;
+      color: #bdbdbd;
+      margin-top: 2px;
+      white-space: nowrap;
+    }
+
+    .ptb-install-btn {
+      background: #e11d2e;
+      color: #fff;
+      border: 0;
+      border-radius: 8px;
+      padding: 9px 15px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .ptb-install-btn:active {
+      transform: scale(0.97);
+    }
+
+    @media (min-width: 768px) {
+      .ptb-install-bar {
+        max-width: 430px;
+        left: 50%;
+        right: auto;
+        width: calc(100% - 24px);
+        transform: translateX(-50%);
+      }
+    }
   </style>
 </head>
 
 <body class="legal">
+
+  <!-- Consent Manager snippet -->
+  <div id="ptb-consent-container"></div>
+  <script>
+    fetch('/consent/consent.html')
+      .then(r => r.text())
+      .then(html => {
+        document.getElementById('ptb-consent-container').innerHTML = html;
+
+        const script = document.createElement('script');
+        script.src = '/consent/consent.js';
+        document.body.appendChild(script);
+      })
+      .catch(() => {
+        console.warn('Consent manager failed to load.');
+      });
+  </script>
+  <!-- End Consent Manager snippet -->
+
   <header class="legal__header">
     <img id="logo-dark" class="brand-img" src="logo-light.png" alt="Pop The Balloon white logo" style="display:none" />
     <img id="logo-light" class="brand-img" src="logo-dark.png" alt="Pop The Balloon black logo" style="display:none" />
@@ -145,7 +271,7 @@
       <a href="home.html" class="legal__nav-link">Home</a>
       <a href="index.html" class="legal__nav-link">Terms of Service</a>
       <a href="privacy.html" class="legal__nav-link">Privacy Policy</a>
-      <a href="safety.html" class="legal__nav-link">User Safety & Reporting</a>
+      <a href="safety.html" class="legal__nav-link">User Safety &amp; Reporting</a>
       <a href="download.html" class="legal__nav-link">Download</a>
       <a href="contact.html" class="legal__nav-link">Contact Us</a>
       <a href="faq.html" aria-current="page" class="legal__nav-link is-active">FAQ</a>
@@ -248,11 +374,13 @@
             <div class="faq-answer__inner">
               <div class="faq-answer__content">
                 <p>
-                  Pop The Balloon is free to download and the core features such as creating profile, browsing profiles, matching and chatting are free. Free users have a daily limit 
-                  and the limit on balloons resets to 20 every 12 hours.
+                  Pop The Balloon is free to download. Core features such as creating a profile,
+                  browsing profiles, matching, and chatting are free. Free users have limits, including
+                  a balloon reset to 20 every 12 hours.
                 </p>
                 <p>
-                  Features such as sending unlimited likes, sending unlimited direct Messages, unlimited balloons, and hiding ads are reserved for users with PTB subscriptions. 
+                  Premium features such as unlimited likes, unlimited direct messages, unlimited balloons,
+                  and hiding ads may be reserved for PTB subscription users.
                 </p>
               </div>
             </div>
@@ -346,27 +474,6 @@
 
         <article class="faq-item">
           <button class="faq-question" type="button" aria-expanded="false">
-            <span>Is Pop The Balloon free to use?</span>
-            <span class="faq-icon" aria-hidden="true">+</span>
-          </button>
-
-          <div class="faq-answer">
-            <div class="faq-answer__inner">
-              <div class="faq-answer__content">
-                <p>
-                  The app may offer both free and paid features. Some features may be available to all users,
-                  while others may require a subscription or in-app purchase.
-                </p>
-                <p>
-                  Pricing, feature access, and subscription options can change over time and will be shown inside the app when applicable.
-                </p>
-              </div>
-            </div>
-          </div>
-        </article>
-
-        <article class="faq-item">
-          <button class="faq-question" type="button" aria-expanded="false">
             <span>How do subscriptions and in-app purchases work?</span>
             <span class="faq-icon" aria-hidden="true">+</span>
           </button>
@@ -380,7 +487,7 @@
                 </p>
                 <p>
                   Billing, renewal, cancellation, and refund rules are generally handled by Apple or Google under their own terms.
-                  Be sure to review your store account settings if you need to manage a subscription.
+                  Review your store account settings if you need to manage a subscription.
                 </p>
               </div>
             </div>
@@ -402,7 +509,7 @@
                 </p>
                 <p>
                   If someone makes you uncomfortable, block them and report them. You can also review our
-                  <a href="safety.html">User Safety & Reporting</a> page for more guidance.
+                  <a href="safety.html">User Safety &amp; Reporting</a> page for more guidance.
                 </p>
               </div>
             </div>
@@ -442,10 +549,10 @@
               <div class="faq-answer__content">
                 <p>
                   Yes. Accounts may be restricted, suspended, or removed for violating the Terms of Service,
-                  Safety rules, community standards, or applicable law.
+                  safety rules, community standards, or applicable law.
                 </p>
                 <p>
-                  That includes things like harassment, hate, threats, scams, impersonation, underage use,
+                  That includes harassment, hate, threats, scams, impersonation, underage use,
                   explicit misconduct, or any attempt to misuse the platform.
                 </p>
               </div>
@@ -485,10 +592,10 @@
               <div class="faq-answer__content">
                 <p>
                   If account deletion is available in-app, you can follow the deletion steps in your settings.
-                  If not, use the support or contact method listed in the app or legal pages.
+                  You can also use the support or contact method listed in the app or legal pages.
                 </p>
                 <p>
-                  Keep in mind that some information may be retained where required by law, for security reasons,
+                  Some information may be retained where required by law, for security reasons,
                   or for legitimate business purposes described in the Privacy Policy.
                 </p>
               </div>
@@ -511,7 +618,8 @@
                 <p>
                   <a href="index.html">Terms of Service</a><br>
                   <a href="privacy.html">Privacy Policy</a><br>
-                  <a href="safety.html">User Safety & Reporting</a>
+                  <a href="safety.html">User Safety &amp; Reporting</a><br>
+                  <a href="child-safety.html">Child Safety Standards</a>
                 </p>
               </div>
             </div>
@@ -520,7 +628,7 @@
       </div>
 
       <p class="faq-note">
-        Still have questions? Send us a email from our <a href="contact.html">contact us</a> page
+        Still have questions? Send us an email from our <a href="contact.html">Contact Us</a> page.
       </p>
     </section>
   </main>
@@ -529,19 +637,40 @@
     <p>© <span id="y"></span> PTB Center Stage</p>
   </footer>
 
+  <!-- Bottom Install Banner -->
+  <div id="ptbInstallBar" class="ptb-install-bar" hidden>
+    <button id="ptbInstallClose" class="ptb-install-close" type="button" aria-label="Close install banner">×</button>
+
+    <img
+      src="/balloon-round.png"
+      alt="PTB app icon"
+      class="ptb-install-icon">
+
+    <div class="ptb-install-text">
+      <strong>Pop The Balloon</strong>
+      <span>Center Stage</span>
+    </div>
+
+    <button id="ptbInstallBtn" class="ptb-install-btn" type="button">Install</button>
+  </div>
+
   <script>
+    // Footer year
     (document.getElementById('y') || {}).textContent = new Date().getFullYear();
 
+    // Theme toggle
     const KEY = 'ptb_theme';
     const root = document.documentElement;
     const btn = document.getElementById('themeBtn');
+
     const label = () => btn && btn.querySelector('.theme-toggle__label');
     const icon = () => btn && btn.querySelector('.theme-toggle__icon');
-    const prefersDark = () => matchMedia('(prefers-color-scheme: dark)').matches;
+    const prefersDark = () => window.matchMedia('(prefers-color-scheme: dark)').matches;
 
     function applyTheme(mode, withTransition = false) {
       if (withTransition) {
         root.classList.add('theme-transition');
+
         requestAnimationFrame(() => {
           root.setAttribute('data-theme', mode);
           setTimeout(() => root.classList.remove('theme-transition'), 650);
@@ -572,22 +701,30 @@
     function cycle() {
       const curr = root.getAttribute('data-theme') || 'auto';
       const next = curr === 'auto' ? 'dark' : curr === 'dark' ? 'light' : 'auto';
+
       localStorage.setItem(KEY, next);
       applyTheme(next, true);
     }
 
     applyTheme(getSaved());
 
-    if (btn) btn.addEventListener('click', cycle);
+    if (btn) {
+      btn.addEventListener('click', cycle);
+    }
 
-    matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
-      if ((localStorage.getItem(KEY) || 'auto') === 'auto') applyTheme('auto', true);
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+      if ((localStorage.getItem(KEY) || 'auto') === 'auto') {
+        applyTheme('auto', true);
+      }
     });
 
+    // FAQ accordion
     const faqItems = document.querySelectorAll('.faq-item');
 
     faqItems.forEach((item) => {
       const button = item.querySelector('.faq-question');
+
+      if (!button) return;
 
       button.addEventListener('click', () => {
         const isOpen = item.classList.contains('is-open');
@@ -605,5 +742,87 @@
       });
     });
   </script>
+
+  <script>
+    // Bottom install banner
+    (function () {
+      const ANDROID_PACKAGE_ID = "com.experimentprojects.centerstage";
+      const ANDROID_APP_URL = "https://play.google.com/store/apps/details?id=" + ANDROID_PACKAGE_ID;
+
+      const IOS_APP_URL = "YOUR_IOS_APP_STORE_URL";
+
+      const bar = document.getElementById("ptbInstallBar");
+      const closeBtn = document.getElementById("ptbInstallClose");
+      const installBtn = document.getElementById("ptbInstallBtn");
+
+      let deferredPrompt = null;
+
+      const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+      const isAndroid = /android/i.test(userAgent);
+      const isIOS =
+        /iPad|iPhone|iPod/.test(userAgent) ||
+        (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+
+      const isStandalone =
+        window.matchMedia("(display-mode: standalone)").matches ||
+        window.navigator.standalone === true;
+
+      const wasClosed = localStorage.getItem("ptbInstallBarClosed") === "true";
+
+      if (isStandalone || wasClosed || !bar || !closeBtn || !installBtn) {
+        return;
+      }
+
+      function showInstallBar() {
+        bar.hidden = false;
+        document.body.classList.add("has-install-bar");
+      }
+
+      function hideInstallBar() {
+        bar.hidden = true;
+        document.body.classList.remove("has-install-bar");
+        localStorage.setItem("ptbInstallBarClosed", "true");
+      }
+
+      window.addEventListener("beforeinstallprompt", function (event) {
+        event.preventDefault();
+        deferredPrompt = event;
+        showInstallBar();
+      });
+
+      if (isAndroid || isIOS) {
+        showInstallBar();
+      }
+
+      closeBtn.addEventListener("click", hideInstallBar);
+
+      installBtn.addEventListener("click", async function () {
+        if (deferredPrompt) {
+          deferredPrompt.prompt();
+          await deferredPrompt.userChoice;
+          deferredPrompt = null;
+          hideInstallBar();
+          return;
+        }
+
+        if (isAndroid) {
+          window.location.href = ANDROID_APP_URL;
+          return;
+        }
+
+        if (isIOS) {
+          if (IOS_APP_URL === "YOUR_IOS_APP_STORE_URL") {
+            alert("On iPhone: tap the Share button, then tap Add to Home Screen.");
+            return;
+          }
+
+          window.location.href = IOS_APP_URL;
+        }
+      });
+
+      window.addEventListener("appinstalled", hideInstallBar);
+    })();
+  </script>
+
 </body>
 </html>
