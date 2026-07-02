@@ -2,14 +2,25 @@
 <html lang="en" data-theme="auto">
 <head>
   <meta charset="utf-8" />
-  <link rel="shortcut icon" type="x-icon" href="https://i.ibb.co/5X6z2dDT/favicon2.png">
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Contact Us • Pop The Balloon — Center Stage</title>
-  <link rel="stylesheet" href="styles.css" />
+
+  <link rel="shortcut icon" type="image/png" href="/balloon-round.png">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="color-scheme" content="dark light">
+  <meta name="theme-color" content="#050505">
+
+  <title>Contact Us • Pop The Balloon — Center Stage</title>
+
+  <link rel="stylesheet" href="styles.css" />
+
+  <!-- PWA / Mobile Install Support -->
+  <link rel="manifest" href="/manifest.json">
+  <link rel="apple-touch-icon" href="/balloon-round.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="PTB Center Stage">
 
   <style>
-    /* Contact card + form styles (uses site CSS variables) */
+    /* Contact card + form styles */
     .contact {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -130,7 +141,7 @@
       color: #22c55e;
     }
 
-    /* Floating logo replaces heart */
+    /* Floating logo */
     .floating-logo {
       width: min(500px, 100%);
       margin-top: 150px;
@@ -146,13 +157,108 @@
     }
 
     @keyframes float {
-      0%,
-      100% {
+      0%, 100% {
         transform: translateY(0);
       }
 
       50% {
         transform: translateY(-10px);
+      }
+    }
+
+    /* Bottom Install Banner */
+    body.has-install-bar {
+      padding-bottom: 105px;
+    }
+
+    .ptb-install-bar {
+      position: fixed;
+      left: 12px;
+      right: 12px;
+      bottom: calc(env(safe-area-inset-bottom, 0px) + 14px);
+      z-index: 999999;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      background: rgba(18, 18, 18, 0.96);
+      color: #fff;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 16px;
+      box-shadow: 0 10px 35px rgba(0, 0, 0, 0.55);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      font-family: Arial, sans-serif;
+    }
+
+    .ptb-install-bar[hidden] {
+      display: none !important;
+    }
+
+    .ptb-install-close {
+      background: transparent;
+      border: 0;
+      color: #ccc;
+      font-size: 28px;
+      line-height: 1;
+      padding: 0 4px;
+      cursor: pointer;
+    }
+
+    .ptb-install-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 10px;
+      object-fit: cover;
+      background: #222;
+      flex-shrink: 0;
+    }
+
+    .ptb-install-text {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .ptb-install-text strong {
+      display: block;
+      font-size: 15px;
+      font-weight: 700;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .ptb-install-text span {
+      display: block;
+      font-size: 12px;
+      color: #bdbdbd;
+      margin-top: 2px;
+      white-space: nowrap;
+    }
+
+    .ptb-install-btn {
+      background: #e11d2e;
+      color: #fff;
+      border: 0;
+      border-radius: 8px;
+      padding: 9px 15px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .ptb-install-btn:active {
+      transform: scale(0.97);
+    }
+
+    @media (min-width: 768px) {
+      .ptb-install-bar {
+        max-width: 430px;
+        left: 50%;
+        right: auto;
+        width: calc(100% - 24px);
+        transform: translateX(-50%);
       }
     }
   </style>
@@ -172,20 +278,22 @@
       .then(html => {
         document.getElementById('ptb-consent-container').innerHTML = html;
 
-        // Load consent.js AFTER the HTML is in the DOM
         const script = document.createElement('script');
         script.src = '/consent/consent.js';
         document.body.appendChild(script);
+      })
+      .catch(() => {
+        console.warn('Consent manager failed to load.');
       });
   </script>
   <!-- End Consent Manager snippet -->
 
   <header class="legal__header">
     <nav class="legal__nav" aria-label="Site links">
-      <a href="home.html">Home</a>
-      <a href="index.html">Terms of Service</a>
-      <a href="privacy.html">Privacy Policy</a>
-      <a href="safety.html">User Safety &amp; Reporting</a>
+      <a href="home.html" class="legal__nav-link">Home</a>
+      <a href="index.html" class="legal__nav-link">Terms of Service</a>
+      <a href="privacy.html" class="legal__nav-link">Privacy Policy</a>
+      <a href="safety.html" class="legal__nav-link">User Safety &amp; Reporting</a>
       <a href="download.html" class="legal__nav-link">Download</a>
       <a href="contact.html" aria-current="page" class="legal__nav-link is-active">Contact Us</a>
       <a href="faq.html" class="legal__nav-link">FAQ</a>
@@ -203,7 +311,6 @@
   <main class="legal__main">
     <div class="contact">
       <div class="split__left">
-        <!-- Floating logo that swaps between dark/light -->
         <div class="floating-logo">
           <img
             id="logo-dark"
@@ -233,10 +340,10 @@
           <h1 id="h1">Contact Pop&nbsp;The&nbsp;Balloon</h1>
 
           <p class="muted">
-Questions, feedback, child safety concerns, or partnership ideas? Drop a note.
-For CSAE, CSAM, or urgent safety concerns, choose
-<strong>Child Safety / CSAE Report</strong> from the category list or visit the
-<a href="safety.html">Safety &amp; Reporting</a> page.
+            Questions, feedback, child safety concerns, or partnership ideas? Drop a note.
+            For CSAE, CSAM, or urgent safety concerns, choose
+            <strong>Child Safety / CSAE Report</strong> from the category list or visit the
+            <a href="safety.html">Safety &amp; Reporting</a> page.
           </p>
 
           <form id="contactForm" novalidate>
@@ -259,20 +366,20 @@ For CSAE, CSAM, or urgent safety concerns, choose
               </div>
 
               <div>
-<label for="category">Category</label>
-<select id="category" name="category" required>
-  <option value="" selected disabled>Choose…</option>
-  <option>Child Safety / CSAE Report</option>
-  <option>Account support</option>
-  <option>Billing</option>
-  <option>Bug report</option>
-  <option>Feature request</option>
-  <option>Safety/reporting</option>
-  <option>Press</option>
-  <option>Partnerships</option>
-  <option>Legal</option>
-  <option>Other</option>
-</select>
+                <label for="category">Category</label>
+                <select id="category" name="category" required>
+                  <option value="" selected disabled>Choose…</option>
+                  <option>Child Safety / CSAE Report</option>
+                  <option>Account support</option>
+                  <option>Billing</option>
+                  <option>Bug report</option>
+                  <option>Feature request</option>
+                  <option>Safety/reporting</option>
+                  <option>Press</option>
+                  <option>Partnerships</option>
+                  <option>Legal</option>
+                  <option>Other</option>
+                </select>
               </div>
             </div>
 
@@ -310,16 +417,35 @@ For CSAE, CSAM, or urgent safety concerns, choose
     <p>© <span id="y"></span> PTB Center Stage</p>
   </footer>
 
+  <!-- Bottom Install Banner -->
+  <div id="ptbInstallBar" class="ptb-install-bar" hidden>
+    <button id="ptbInstallClose" class="ptb-install-close" type="button" aria-label="Close install banner">×</button>
+
+    <img
+      src="/balloon-round.png"
+      alt="PTB app icon"
+      class="ptb-install-icon">
+
+    <div class="ptb-install-text">
+      <strong>Pop The Balloon</strong>
+      <span>Center Stage</span>
+    </div>
+
+    <button id="ptbInstallBtn" class="ptb-install-btn" type="button">Install</button>
+  </div>
+
   <script>
+    // Footer year
     (document.getElementById('y') || {}).textContent = new Date().getFullYear();
 
-    // THEME TOGGLE (Auto → Dark → Light) — matches the rest of the site
+    // Theme toggle
     const KEY = 'ptb_theme';
     const root = document.documentElement;
     const btn = document.getElementById('themeBtn');
+
     const label = () => btn && btn.querySelector('.theme-toggle__label');
     const icon = () => btn && btn.querySelector('.theme-toggle__icon');
-    const prefersDark = () => matchMedia('(prefers-color-scheme: dark)').matches;
+    const prefersDark = () => window.matchMedia('(prefers-color-scheme: dark)').matches;
 
     function applyTheme(mode, withTransition = false) {
       if (withTransition) {
@@ -338,7 +464,6 @@ For CSAE, CSAM, or urgent safety concerns, choose
       if (label()) label().textContent = eff === 'dark' ? 'Dark' : 'Light';
       if (icon()) icon().textContent = eff === 'dark' ? '🌙' : '☀️';
 
-      // Toggle which logo shows based on effective theme
       const logoDark = document.getElementById('logo-dark');
       const logoLight = document.getElementById('logo-light');
       const useDark = eff === 'dark';
@@ -355,7 +480,7 @@ For CSAE, CSAM, or urgent safety concerns, choose
 
     function cycle() {
       const curr = root.getAttribute('data-theme') || 'auto';
-      const next = curr === 'auto' ? 'dark' : (curr === 'dark' ? 'light' : 'auto');
+      const next = curr === 'auto' ? 'dark' : curr === 'dark' ? 'light' : 'auto';
 
       localStorage.setItem(KEY, next);
       applyTheme(next, true);
@@ -367,7 +492,7 @@ For CSAE, CSAM, or urgent safety concerns, choose
       btn.addEventListener('click', cycle);
     }
 
-    matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
       if ((localStorage.getItem(KEY) || 'auto') === 'auto') {
         applyTheme('auto', true);
       }
@@ -375,7 +500,7 @@ For CSAE, CSAM, or urgent safety concerns, choose
   </script>
 
   <script>
-    // Firebase app & Firestore (public contact inbox)
+    // Firebase app & Firestore
     const firebaseConfig = {
       apiKey: "AIzaSyCIr5PlB9YZzvaP58bizLgiMWLZmLQpoeI",
       authDomain: "poptheballoonapp-44787.firebaseapp.com",
@@ -400,8 +525,6 @@ For CSAE, CSAM, or urgent safety concerns, choose
       sendBtn.disabled = isBusy;
       status.textContent = isBusy ? 'Sending…' : '';
 
-      // Clear old messages only when a new send starts.
-      // Do NOT clear after success/error, or the user never sees the result.
       if (isBusy) {
         feedback.textContent = '';
         feedback.className = 'msg';
@@ -423,7 +546,6 @@ For CSAE, CSAM, or urgent safety concerns, choose
         const category = document.getElementById('category').value;
         const message = getValue('message');
 
-        // Basic client validation
         if (!name || !email || !subject || !category || !message) {
           throw new Error('Please fill out all required fields.');
         }
@@ -462,5 +584,87 @@ For CSAE, CSAM, or urgent safety concerns, choose
       }
     });
   </script>
+
+  <script>
+    // Bottom install banner
+    (function () {
+      const ANDROID_PACKAGE_ID = "com.experimentprojects.centerstage";
+      const ANDROID_APP_URL = "https://play.google.com/store/apps/details?id=" + ANDROID_PACKAGE_ID;
+
+      const IOS_APP_URL = "YOUR_IOS_APP_STORE_URL";
+
+      const bar = document.getElementById("ptbInstallBar");
+      const closeBtn = document.getElementById("ptbInstallClose");
+      const installBtn = document.getElementById("ptbInstallBtn");
+
+      let deferredPrompt = null;
+
+      const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+      const isAndroid = /android/i.test(userAgent);
+      const isIOS =
+        /iPad|iPhone|iPod/.test(userAgent) ||
+        (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+
+      const isStandalone =
+        window.matchMedia("(display-mode: standalone)").matches ||
+        window.navigator.standalone === true;
+
+      const wasClosed = localStorage.getItem("ptbInstallBarClosed") === "true";
+
+      if (isStandalone || wasClosed || !bar || !closeBtn || !installBtn) {
+        return;
+      }
+
+      function showInstallBar() {
+        bar.hidden = false;
+        document.body.classList.add("has-install-bar");
+      }
+
+      function hideInstallBar() {
+        bar.hidden = true;
+        document.body.classList.remove("has-install-bar");
+        localStorage.setItem("ptbInstallBarClosed", "true");
+      }
+
+      window.addEventListener("beforeinstallprompt", function (event) {
+        event.preventDefault();
+        deferredPrompt = event;
+        showInstallBar();
+      });
+
+      if (isAndroid || isIOS) {
+        showInstallBar();
+      }
+
+      closeBtn.addEventListener("click", hideInstallBar);
+
+      installBtn.addEventListener("click", async function () {
+        if (deferredPrompt) {
+          deferredPrompt.prompt();
+          await deferredPrompt.userChoice;
+          deferredPrompt = null;
+          hideInstallBar();
+          return;
+        }
+
+        if (isAndroid) {
+          window.location.href = ANDROID_APP_URL;
+          return;
+        }
+
+        if (isIOS) {
+          if (IOS_APP_URL === "YOUR_IOS_APP_STORE_URL") {
+            alert("On iPhone: tap the Share button, then tap Add to Home Screen.");
+            return;
+          }
+
+          window.location.href = IOS_APP_URL;
+        }
+      });
+
+      window.addEventListener("appinstalled", hideInstallBar);
+    })();
+  </script>
+
 </body>
 </html>
