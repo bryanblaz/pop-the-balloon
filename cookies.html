@@ -20,7 +20,6 @@
   <meta name="apple-mobile-web-app-title" content="PTB Center Stage">
 
   <style>
-    /* Bottom Install Banner */
     body.has-install-bar {
       padding-bottom: 105px;
     }
@@ -228,14 +227,29 @@
     const label = () => btn && btn.querySelector('.theme-toggle__label');
     const icon = () => btn && btn.querySelector('.theme-toggle__icon');
 
+    function getStoredTheme() {
+      try {
+        return localStorage.getItem(KEY);
+      } catch (error) {
+        return null;
+      }
+    }
+
+    function setStoredTheme(theme) {
+      try {
+        localStorage.setItem(KEY, theme);
+      } catch (error) {
+        // Ignore storage errors inside restricted in-app browsers.
+      }
+    }
+
     function getSavedTheme() {
-      const savedTheme = localStorage.getItem(KEY);
+      const savedTheme = getStoredTheme();
 
       // Fix old saved values from previous code.
-      // Your old code saved "auto", which can cause LinkedIn/mobile browsers
-      // to show the wrong logo depending on phone theme.
+      // "auto" can make LinkedIn/mobile browsers show the wrong logo.
       if (savedTheme !== 'dark' && savedTheme !== 'light') {
-        localStorage.setItem(KEY, 'dark');
+        setStoredTheme('dark');
         return 'dark';
       }
 
@@ -303,7 +317,7 @@
       const currentTheme = root.getAttribute('data-theme') === 'light' ? 'light' : 'dark';
       const nextTheme = currentTheme === 'dark' ? 'light' : 'dark';
 
-      localStorage.setItem(KEY, nextTheme);
+      setStoredTheme(nextTheme);
       applyTheme(nextTheme, true);
     }
 
@@ -333,7 +347,6 @@
       let deferredPrompt = null;
 
       const userAgent = navigator.userAgent || navigator.vendor || window.opera;
-
       const isAndroid = /android/i.test(userAgent);
 
       const isIOS =
@@ -348,18 +361,41 @@
         return;
       }
 
-      let wasClosed = localStorage.getItem(CLOSE_KEY) === "true";
+      let wasClosed = false;
+
+      try {
+        wasClosed = localStorage.getItem(CLOSE_KEY) === "true";
+      } catch (error) {
+        wasClosed = false;
+      }
 
       if (wasClosed) {
-        let visits = parseInt(localStorage.getItem(VISIT_KEY) || "0", 10);
+        let visits = 0;
+
+        try {
+          visits = parseInt(localStorage.getItem(VISIT_KEY) || "0", 10);
+        } catch (error) {
+          visits = 0;
+        }
+
         visits += 1;
 
         if (visits >= SHOW_AGAIN_AFTER_VISITS) {
-          localStorage.removeItem(CLOSE_KEY);
-          localStorage.removeItem(VISIT_KEY);
+          try {
+            localStorage.removeItem(CLOSE_KEY);
+            localStorage.removeItem(VISIT_KEY);
+          } catch (error) {
+            // Ignore storage errors.
+          }
+
           wasClosed = false;
         } else {
-          localStorage.setItem(VISIT_KEY, String(visits));
+          try {
+            localStorage.setItem(VISIT_KEY, String(visits));
+          } catch (error) {
+            // Ignore storage errors.
+          }
+
           return;
         }
       }
@@ -376,8 +412,13 @@
 
       function closeInstallBar() {
         hideInstallBar();
-        localStorage.setItem(CLOSE_KEY, "true");
-        localStorage.setItem(VISIT_KEY, "0");
+
+        try {
+          localStorage.setItem(CLOSE_KEY, "true");
+          localStorage.setItem(VISIT_KEY, "0");
+        } catch (error) {
+          // Ignore storage errors.
+        }
       }
 
       window.addEventListener("beforeinstallprompt", function (event) {
