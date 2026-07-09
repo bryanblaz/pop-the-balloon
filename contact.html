@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-theme="auto">
+<html lang="en" data-theme="dark">
 <head>
   <meta charset="utf-8" />
 
@@ -7,7 +7,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="color-scheme" content="dark light">
-  <meta name="theme-color" content="#050505">
+  <meta name="theme-color" content="#050505" id="themeColorMeta">
 
   <title>Contact Us • Pop The Balloon — Center Stage</title>
 
@@ -20,7 +20,6 @@
   <meta name="apple-mobile-web-app-title" content="PTB Center Stage">
 
   <style>
-    /* Contact card + form styles */
     .contact {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -141,7 +140,6 @@
       color: #22c55e;
     }
 
-    /* Floating logo */
     .floating-logo {
       width: min(500px, 100%);
       margin-top: 150px;
@@ -154,6 +152,14 @@
     .floating-logo .brand-img {
       width: 100%;
       height: auto;
+      display: block;
+    }
+
+    @media (max-width: 900px) {
+      .floating-logo {
+        width: min(420px, 90%);
+        margin: 20px auto 32px;
+      }
     }
 
     @keyframes float {
@@ -166,7 +172,6 @@
       }
     }
 
-    /* Bottom Install Banner */
     body.has-install-bar {
       padding-bottom: 105px;
     }
@@ -346,18 +351,12 @@
       <div class="split__left">
         <div class="floating-logo">
           <img
-            id="logo-dark"
-            class="brand-img"
-            src="logo-light.png"
-            alt="Pop The Balloon white logo"
-            style="display:none"
-          />
-          <img
-            id="logo-light"
+            id="brandLogo"
             class="brand-img"
             src="logo-dark.png"
-            alt="Pop The Balloon black logo"
-            style="display:none"
+            data-dark-logo="logo-dark.png"
+            data-light-logo="logo-light.png"
+            alt="Pop The Balloon Center Stage logo"
           />
         </div>
 
@@ -469,67 +468,89 @@
 
   <script>
     // Footer year
-    (document.getElementById('y') || {}).textContent = new Date().getFullYear();
+    const yearEl = document.getElementById('y');
+    if (yearEl) {
+      yearEl.textContent = new Date().getFullYear();
+    }
 
     // Theme toggle
     const KEY = 'ptb_theme';
     const root = document.documentElement;
     const btn = document.getElementById('themeBtn');
+    const themeColorMeta = document.getElementById('themeColorMeta');
 
     const label = () => btn && btn.querySelector('.theme-toggle__label');
     const icon = () => btn && btn.querySelector('.theme-toggle__icon');
-    const prefersDark = () => window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+    function getSavedTheme() {
+      const saved = localStorage.getItem(KEY);
+
+      // Kill old "auto" values from previous code.
+      if (saved !== 'dark' && saved !== 'light') {
+        localStorage.setItem(KEY, 'dark');
+        return 'dark';
+      }
+
+      return saved;
+    }
+
+    function updateLogo(mode) {
+      const logo = document.getElementById('brandLogo');
+      if (!logo) return;
+
+      const darkLogo = logo.dataset.darkLogo || 'logo-dark.png';
+      const lightLogo = logo.dataset.lightLogo || 'logo-light.png';
+
+      logo.src = mode === 'dark' ? darkLogo : lightLogo;
+    }
 
     function applyTheme(mode, withTransition = false) {
+      const cleanMode = mode === 'light' ? 'light' : 'dark';
+
       if (withTransition) {
         root.classList.add('theme-transition');
 
         requestAnimationFrame(() => {
-          root.setAttribute('data-theme', mode);
+          root.setAttribute('data-theme', cleanMode);
+          updateLogo(cleanMode);
+
+          if (themeColorMeta) {
+            themeColorMeta.setAttribute('content', cleanMode === 'dark' ? '#050505' : '#ffffff');
+          }
+
           setTimeout(() => root.classList.remove('theme-transition'), 650);
         });
       } else {
-        root.setAttribute('data-theme', mode);
+        root.setAttribute('data-theme', cleanMode);
+        updateLogo(cleanMode);
+
+        if (themeColorMeta) {
+          themeColorMeta.setAttribute('content', cleanMode === 'dark' ? '#050505' : '#ffffff');
+        }
       }
 
-      const eff = mode === 'auto' ? (prefersDark() ? 'dark' : 'light') : mode;
+      if (label()) {
+        label().textContent = cleanMode === 'dark' ? 'Dark' : 'Light';
+      }
 
-      if (label()) label().textContent = eff === 'dark' ? 'Dark' : 'Light';
-      if (icon()) icon().textContent = eff === 'dark' ? '🌙' : '☀️';
-
-      const logoDark = document.getElementById('logo-dark');
-      const logoLight = document.getElementById('logo-light');
-      const useDark = eff === 'dark';
-
-      if (logoDark && logoLight) {
-        logoDark.style.display = useDark ? 'inline-block' : 'none';
-        logoLight.style.display = useDark ? 'none' : 'inline-block';
+      if (icon()) {
+        icon().textContent = cleanMode === 'dark' ? '🌙' : '☀️';
       }
     }
 
-    function getSaved() {
-      return localStorage.getItem(KEY) || 'auto';
-    }
-
-    function cycle() {
-      const curr = root.getAttribute('data-theme') || 'auto';
-      const next = curr === 'auto' ? 'dark' : curr === 'dark' ? 'light' : 'auto';
+    function cycleTheme() {
+      const current = root.getAttribute('data-theme') === 'light' ? 'light' : 'dark';
+      const next = current === 'dark' ? 'light' : 'dark';
 
       localStorage.setItem(KEY, next);
       applyTheme(next, true);
     }
 
-    applyTheme(getSaved());
+    applyTheme(getSavedTheme());
 
     if (btn) {
-      btn.addEventListener('click', cycle);
+      btn.addEventListener('click', cycleTheme);
     }
-
-    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
-      if ((localStorage.getItem(KEY) || 'auto') === 'auto') {
-        applyTheme('auto', true);
-      }
-    });
   </script>
 
   <script>
@@ -568,54 +589,56 @@
       return (document.getElementById(id)?.value || '').trim();
     }
 
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      setBusy(true);
+    if (form) {
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        setBusy(true);
 
-      try {
-        const name = getValue('name');
-        const email = getValue('email');
-        const subject = getValue('subject');
-        const category = document.getElementById('category').value;
-        const message = getValue('message');
+        try {
+          const name = getValue('name');
+          const email = getValue('email');
+          const subject = getValue('subject');
+          const category = document.getElementById('category').value;
+          const message = getValue('message');
 
-        if (!name || !email || !subject || !category || !message) {
-          throw new Error('Please fill out all required fields.');
+          if (!name || !email || !subject || !category || !message) {
+            throw new Error('Please fill out all required fields.');
+          }
+
+          if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+            throw new Error('Enter a valid email address.');
+          }
+
+          if (message.length < 10) {
+            throw new Error('Message is too short.');
+          }
+
+          const payload = {
+            name,
+            email,
+            subject,
+            category,
+            message,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+            userAgent: navigator.userAgent,
+            referrer: document.referrer || null,
+            url: location.href
+          };
+
+          await db.collection('contact_messages').add(payload);
+
+          feedback.textContent = 'Got it — we\'ll be in touch.';
+          feedback.className = 'msg success';
+          form.reset();
+        } catch (err) {
+          console.error('Contact form send failed:', err);
+          feedback.textContent = err.message || String(err);
+          feedback.className = 'msg error';
+        } finally {
+          setBusy(false);
         }
-
-        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-          throw new Error('Enter a valid email address.');
-        }
-
-        if (message.length < 10) {
-          throw new Error('Message is too short.');
-        }
-
-        const payload = {
-          name,
-          email,
-          subject,
-          category,
-          message,
-          createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-          userAgent: navigator.userAgent,
-          referrer: document.referrer || null,
-          url: location.href
-        };
-
-        await db.collection('contact_messages').add(payload);
-
-        feedback.textContent = 'Got it — we\'ll be in touch.';
-        feedback.className = 'msg success';
-        form.reset();
-      } catch (err) {
-        console.error('Contact form send failed:', err);
-        feedback.textContent = err.message || String(err);
-        feedback.className = 'msg error';
-      } finally {
-        setBusy(false);
-      }
-    });
+      });
+    }
   </script>
 
   <script>
@@ -624,7 +647,6 @@
     (function () {
       const ANDROID_PACKAGE_ID = "com.experimentprojects.centerstage";
       const ANDROID_APP_URL = "https://play.google.com/store/apps/details?id=" + ANDROID_PACKAGE_ID;
-
       const IOS_APP_URL = "https://apps.apple.com/app/ptb-center-stage/id6756091119";
 
       const CLOSE_KEY = "ptbInstallBarClosed";
@@ -710,11 +732,6 @@
         }
 
         if (isIOS) {
-          if (IOS_APP_URL === "YOUR_IOS_APP_STORE_URL") {
-            alert("On iPhone: tap the Share button, then tap Add to Home Screen.");
-            return;
-          }
-
           window.location.href = IOS_APP_URL;
         }
       });
