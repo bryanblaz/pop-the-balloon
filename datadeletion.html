@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-theme="auto">
+<html lang="en" data-theme="dark">
 <head>
   <meta charset="utf-8" />
 
@@ -7,7 +7,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="color-scheme" content="dark light">
-  <meta name="theme-color" content="#050505">
+  <meta name="theme-color" content="#050505" id="themeColorMeta">
 
   <title>Data Deletion • Pop The Balloon — Center Stage</title>
 
@@ -167,8 +167,14 @@
   <!-- End Consent Manager snippet -->
 
   <header class="legal__header">
-    <img id="logo-dark" class="brand-img" src="logo-light.png" alt="Pop The Balloon white logo" style="display:none" />
-    <img id="logo-light" class="brand-img" src="logo-dark.png" alt="Pop The Balloon black logo" style="display:none" />
+    <img
+      id="brandLogo"
+      class="brand-img"
+      src="logo-dark.png"
+      data-dark-logo="logo-dark.png"
+      data-light-logo="logo-light.png"
+      alt="Pop The Balloon Center Stage logo"
+    />
 
     <nav class="legal__nav" aria-label="Legal links">
       <a href="home.html" class="legal__nav-link">Home</a>
@@ -225,67 +231,121 @@
 
   <script>
     // Footer year
-    (document.getElementById('y') || {}).textContent = new Date().getFullYear();
+    const yearEl = document.getElementById('y');
+
+    if (yearEl) {
+      yearEl.textContent = new Date().getFullYear();
+    }
 
     // Theme toggle
     const KEY = 'ptb_theme';
     const root = document.documentElement;
     const btn = document.getElementById('themeBtn');
+    const themeColorMeta = document.getElementById('themeColorMeta');
 
     const label = () => btn && btn.querySelector('.theme-toggle__label');
     const icon = () => btn && btn.querySelector('.theme-toggle__icon');
-    const prefersDark = () => window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+    function getStoredTheme() {
+      try {
+        return localStorage.getItem(KEY);
+      } catch (error) {
+        return null;
+      }
+    }
+
+    function setStoredTheme(theme) {
+      try {
+        localStorage.setItem(KEY, theme);
+      } catch (error) {
+        // Ignore storage errors in restricted in-app browsers.
+      }
+    }
+
+    function getSavedTheme() {
+      const savedTheme = getStoredTheme();
+
+      // Fix old saved values from previous code.
+      // The old code saved "auto", which can cause LinkedIn/mobile browsers
+      // to show the wrong logo depending on the phone's theme.
+      if (savedTheme !== 'dark' && savedTheme !== 'light') {
+        setStoredTheme('dark');
+        return 'dark';
+      }
+
+      return savedTheme;
+    }
+
+    function updateLogo(mode) {
+      const logo = document.getElementById('brandLogo');
+
+      if (!logo) {
+        return;
+      }
+
+      const darkLogo = logo.dataset.darkLogo || 'logo-dark.png';
+      const lightLogo = logo.dataset.lightLogo || 'logo-light.png';
+
+      logo.src = mode === 'dark' ? darkLogo : lightLogo;
+    }
+
+    function updateThemeButton(mode) {
+      if (label()) {
+        label().textContent = mode === 'dark' ? 'Dark' : 'Light';
+      }
+
+      if (icon()) {
+        icon().textContent = mode === 'dark' ? '🌙' : '☀️';
+      }
+    }
+
+    function updateThemeColor(mode) {
+      if (!themeColorMeta) {
+        return;
+      }
+
+      themeColorMeta.setAttribute('content', mode === 'dark' ? '#050505' : '#ffffff');
+    }
 
     function applyTheme(mode, withTransition = false) {
+      const cleanMode = mode === 'light' ? 'light' : 'dark';
+
       if (withTransition) {
         root.classList.add('theme-transition');
 
         requestAnimationFrame(() => {
-          root.setAttribute('data-theme', mode);
-          setTimeout(() => root.classList.remove('theme-transition'), 650);
+          root.setAttribute('data-theme', cleanMode);
+          updateLogo(cleanMode);
+          updateThemeButton(cleanMode);
+          updateThemeColor(cleanMode);
+
+          setTimeout(() => {
+            root.classList.remove('theme-transition');
+          }, 650);
         });
-      } else {
-        root.setAttribute('data-theme', mode);
+
+        return;
       }
 
-      const eff = mode === 'auto' ? (prefersDark() ? 'dark' : 'light') : mode;
-
-      if (label()) label().textContent = eff === 'dark' ? 'Dark' : 'Light';
-      if (icon()) icon().textContent = eff === 'dark' ? '🌙' : '☀️';
-
-      const logoDark = document.getElementById('logo-dark');
-      const logoLight = document.getElementById('logo-light');
-      const useDark = eff === 'dark';
-
-      if (logoDark && logoLight) {
-        logoDark.style.display = useDark ? 'inline-block' : 'none';
-        logoLight.style.display = useDark ? 'none' : 'inline-block';
-      }
+      root.setAttribute('data-theme', cleanMode);
+      updateLogo(cleanMode);
+      updateThemeButton(cleanMode);
+      updateThemeColor(cleanMode);
     }
 
-    function getSaved() {
-      return localStorage.getItem(KEY) || 'auto';
+    function cycleTheme() {
+      const currentTheme = root.getAttribute('data-theme') === 'light' ? 'light' : 'dark';
+      const nextTheme = currentTheme === 'dark' ? 'light' : 'dark';
+
+      setStoredTheme(nextTheme);
+      applyTheme(nextTheme, true);
     }
 
-    function cycle() {
-      const curr = root.getAttribute('data-theme') || 'auto';
-      const next = curr === 'auto' ? 'dark' : curr === 'dark' ? 'light' : 'auto';
-
-      localStorage.setItem(KEY, next);
-      applyTheme(next, true);
-    }
-
-    applyTheme(getSaved());
+    applyTheme(getSavedTheme());
 
     if (btn) {
-      btn.addEventListener('click', cycle);
+      btn.addEventListener('click', cycleTheme);
     }
-
-    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
-      if ((localStorage.getItem(KEY) || 'auto') === 'auto') {
-        applyTheme('auto', true);
-      }
-    });
   </script>
 
   <script>
@@ -294,7 +354,6 @@
     (function () {
       const ANDROID_PACKAGE_ID = "com.experimentprojects.centerstage";
       const ANDROID_APP_URL = "https://play.google.com/store/apps/details?id=" + ANDROID_PACKAGE_ID;
-
       const IOS_APP_URL = "https://apps.apple.com/app/ptb-center-stage/id6756091119";
 
       const CLOSE_KEY = "ptbInstallBarClosed";
@@ -309,6 +368,7 @@
 
       const userAgent = navigator.userAgent || navigator.vendor || window.opera;
       const isAndroid = /android/i.test(userAgent);
+
       const isIOS =
         /iPad|iPhone|iPod/.test(userAgent) ||
         (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
@@ -321,18 +381,41 @@
         return;
       }
 
-      let wasClosed = localStorage.getItem(CLOSE_KEY) === "true";
+      let wasClosed = false;
+
+      try {
+        wasClosed = localStorage.getItem(CLOSE_KEY) === "true";
+      } catch (error) {
+        wasClosed = false;
+      }
 
       if (wasClosed) {
-        let visits = parseInt(localStorage.getItem(VISIT_KEY) || "0", 10);
+        let visits = 0;
+
+        try {
+          visits = parseInt(localStorage.getItem(VISIT_KEY) || "0", 10);
+        } catch (error) {
+          visits = 0;
+        }
+
         visits += 1;
 
         if (visits >= SHOW_AGAIN_AFTER_VISITS) {
-          localStorage.removeItem(CLOSE_KEY);
-          localStorage.removeItem(VISIT_KEY);
+          try {
+            localStorage.removeItem(CLOSE_KEY);
+            localStorage.removeItem(VISIT_KEY);
+          } catch (error) {
+            // Ignore storage errors.
+          }
+
           wasClosed = false;
         } else {
-          localStorage.setItem(VISIT_KEY, String(visits));
+          try {
+            localStorage.setItem(VISIT_KEY, String(visits));
+          } catch (error) {
+            // Ignore storage errors.
+          }
+
           return;
         }
       }
@@ -349,8 +432,13 @@
 
       function closeInstallBar() {
         hideInstallBar();
-        localStorage.setItem(CLOSE_KEY, "true");
-        localStorage.setItem(VISIT_KEY, "0");
+
+        try {
+          localStorage.setItem(CLOSE_KEY, "true");
+          localStorage.setItem(VISIT_KEY, "0");
+        } catch (error) {
+          // Ignore storage errors.
+        }
       }
 
       window.addEventListener("beforeinstallprompt", function (event) {
@@ -380,11 +468,6 @@
         }
 
         if (isIOS) {
-          if (IOS_APP_URL === "YOUR_IOS_APP_STORE_URL") {
-            alert("On iPhone: tap the Share button, then tap Add to Home Screen.");
-            return;
-          }
-
           window.location.href = IOS_APP_URL;
         }
       });
